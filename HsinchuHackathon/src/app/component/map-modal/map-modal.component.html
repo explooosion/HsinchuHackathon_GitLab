@@ -1,0 +1,409 @@
+<!-- Breadcrumbs -->
+<div class="container dashboard">
+  <!-- Icon Cards -->
+  <div class="row">
+    <div class="col-xl-3 col-sm-6 mb-3">
+      <div class="card card-inverse card-primary o-hidden h-100">
+        <div class="card-block">
+          <i class="fa fa-3x fa-smile-o"></i>
+          <h1 class="text-center">{{countSecure - countBurglary}}</h1>
+        </div>
+        <div class="card-footer small">
+          <h5>安全指數</h5>
+        </div>
+      </div>
+    </div>
+    <div class="col-xl-3 col-sm-6 mb-3">
+      <div class="card card-inverse card-danger o-hidden h-100">
+        <div class="card-block">
+          <i class="fa fa-3x fa-medkit"></i>
+          <h1 class="text-center">{{countHospi}}</h1>
+        </div>
+        <div class="card-footer small">
+          <h5>醫療指數</h5>
+        </div>
+      </div>
+    </div>
+    <div class="col-xl-3 col-sm-6 mb-3">
+      <div class="card card-inverse card-success o-hidden h-100">
+        <div class="card-block">
+          <i class="fa fa-3x fa-heartbeat"></i>
+          <h1 class="text-center">{{countCare}}</h1>
+        </div>
+        <div class="card-footer small">
+          <h5>照護指數</h5>
+        </div>
+      </div>
+    </div>
+    <div class="col-xl-3 col-sm-6 mb-3">
+      <div class="card card-inverse card-warning o-hidden h-100">
+        <div class="card-block">
+          <i class="fa fa-3x fa-users"></i>
+          <h1 class="text-center">{{countTemple}}</h1>
+        </div>
+        <div class="card-footer small">
+          <h5>宗教指數</h5>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+<div id="currentGroup" class="jumbotron jumbotron-fluid">
+
+
+  <div class="container">
+
+    <div class="row">
+      <div class="col-lg-12 text-center">
+        <h2 class="title">社會福利環域分析</h2>
+      </div>
+    </div>
+
+  </div>
+
+
+  <div class="container">
+    <div class="row">
+      <div class="col-6">
+
+        <div class="container">
+
+          <div class="row form-group">
+            <label for="example-text-input" class="col-form-label co-custom">地址：</label>
+            <div class="col-6">
+              <input type="text" class="form-control" [(ngModel)]="addr" placeholder="placeholderText" />
+            </div>
+            <div class="col-2">
+              <button type="button" class="btn btn-success btn-search co-custom" (click)="setCircle()">定位</button>
+            </div>
+            <div class="col-2">
+              <button type="button" class="btn btn-success btn-search co-custom" (click)="analyticsPointer()">分析</button>
+            </div>
+          </div>
+
+          <div class="row form-group">
+            <label class="col-form-label co-custom">經度：</label>
+            <div class="col-4">
+              <input type="text" class="form-control" [(ngModel)]="lat" readonly />
+            </div>
+            <label class="col-form-label co-custom">緯度：</label>
+            <div class="col-4">
+              <input type="text" class="form-control" [(ngModel)]="lng" readonly />
+            </div>
+          </div>
+
+          <div class="row form-group">
+            <label class="col-form-label co-custom">半徑：</label>
+            <div class="col-4">
+              <input type="number" class="form-control" [(ngModel)]="radius" />
+            </div>
+            <label class="col-form-label co-custom">顏色：</label>
+            <div class="col-4">
+              <input class="form-control" [(colorPicker)]="color" [style.background]="color" [value]="color" />
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-6">
+              <div class="card">
+                <div class="card-header card-inverse card-success co-custom">
+                  圖層控制
+                </div>
+                <div class="card-block">
+                  <blockquote class="card-blockquote">
+                    <tree-root #tree [nodes]="nodes" [options]="treeOptions">
+                      <template #treeNodeTemplate let-node="node" let-index="index">
+                        <input (change)="check( node, $event)" type="checkbox" [indeterminate]="node.data.indeterminate" [checked]="node.data.checked">                        {{ node.data.name }}
+                      </template>
+                    </tree-root>
+                  </blockquote>
+                </div>
+              </div>
+            </div>
+            <div class="col-6">
+              <div class="card">
+                <div class="card-header card-inverse card-success co-custom">
+                  環域分析結果
+                </div>
+                <div class="card-block">
+                  <blockquote class="card-blockquote">
+                    <p>監視器材：{{countSecure}}</p>
+                    <p>醫院診所：{{countHospi}}</p>
+                    <p>照護機構：{{countCare}}</p>
+                    <p>宗教建設：{{countTemple}}</p>
+                    <p>竊盜紀錄：{{countBurglary}}</p>
+                    <p>國民中學：{{countSchool}}</p>
+                    <p>長照ABC：{{countABC}}</p>
+                  </blockquote>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <div class="col-6">
+        <div class="gmap">
+          <agm-map class="gmap-box" [latitude]="lat" [longitude]="lng" [zoom]="zoom" [disableDefaultUI]="false" [fitBounds]="bounds">
+            <agm-marker [latitude]=" lat" [longitude]="lng"></agm-marker>
+            <agm-circle [latitude]="lat" [longitude]="lng" [radius]="radius" [fillColor]="color" [fillOpacity]="0.6"></agm-circle>
+            <agm-data-layer *ngIf="geoLayerShowCounty" [geoJson]="geoLayerCounty" (layerClick)="infoWindow.open();geoLayerClick($event)"
+              [style]="styleLayer"></agm-data-layer>
+            <agm-data-layer *ngIf="geoLayerShowTown" [geoJson]="geoLayerTown" (layerClick)="infoWindow.open();geoLayerClick($event)"
+              [style]="styleLayer"></agm-data-layer>
+            <agm-data-layer *ngIf="geoLayerShowVillage" [geoJson]="geoLayerVillage" (layerClick)="infoWindow.open();geoLayerClick($event)"
+              [style]="styleLayer"></agm-data-layer>
+            <agm-data-layer *ngIf="geoLayerShowHospi" [geoJson]="geoLayerHospi" (layerClick)="infoWindow.open();geoLayerClick($event)"
+              [style]="styleLayer"></agm-data-layer>
+            <agm-data-layer *ngIf="geoLayerShowABC" [geoJson]="geoLayerABC" (layerClick)="infoWindow.open();geoLayerClick($event)"
+              [style]="styleLayer"></agm-data-layer>
+            <agm-data-layer *ngIf="geoLayerShowSecure" [geoJson]="geoLayerSecure" (layerClick)="infoWindow.open();geoLayerClick($event)"
+              [style]="styleLayer"></agm-data-layer>
+            <agm-data-layer *ngIf="geoLayerShowBurglary" [geoJson]="geoLayerBurglary" (layerClick)="infoWindow.open();geoLayerClick($event)"
+              [style]="styleLayer"></agm-data-layer>
+            <agm-data-layer *ngIf="geoLayerShowCare" [geoJson]="geoLayerCare" (layerClick)="infoWindow.open();geoLayerClick($event)"
+              [style]="styleLayer"></agm-data-layer>
+            <agm-data-layer *ngIf="geoLayerShowTemple" [geoJson]="geoLayerTemple" (layerClick)="infoWindow.open();geoLayerClick($event)"
+              [style]="styleLayer"></agm-data-layer>
+            <agm-data-layer *ngIf="geoLayerShowSchool" [geoJson]="geoLayerSchool" (layerClick)="infoWindow.open();geoLayerClick($event)"
+              [style]="styleLayer"></agm-data-layer>
+            <agm-info-window #infoWindow [isOpen]="infowinIsOpen" [latitude]="infowinLat" [longitude]="infowinLng">
+              <strong>{{infowinMsg[0]}}</strong>
+              <p>{{infowinMsg[1]}}</p>
+              <p>{{infowinMsg[2]}}</p>
+            </agm-info-window>
+          </agm-map>
+          <div class="gmap-mask">click to unlock</div>
+          <div class="sk-fading-circle gmap-loading">
+            <div class="sk-circle1 sk-circle"></div>
+            <div class="sk-circle2 sk-circle"></div>
+            <div class="sk-circle3 sk-circle"></div>
+            <div class="sk-circle4 sk-circle"></div>
+            <div class="sk-circle5 sk-circle"></div>
+            <div class="sk-circle6 sk-circle"></div>
+            <div class="sk-circle7 sk-circle"></div>
+            <div class="sk-circle8 sk-circle"></div>
+            <div class="sk-circle9 sk-circle"></div>
+            <div class="sk-circle10 sk-circle"></div>
+            <div class="sk-circle11 sk-circle"></div>
+            <div class="sk-circle12 sk-circle"></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+
+</div>
+
+
+
+
+<div id="futureGroup" class="">
+
+  <div class="container">
+
+    <div class="row">
+      <div class="col-lg-12 text-center">
+        <h3 class="title">高齡化社會發展趨勢之預測評估</h3>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-lg-6">
+        <div class="card">
+          <div class="card-header card-custom">
+            <i class="fa fa-table" aria-hidden="true"></i>&nbsp;年齡結構指標（ 2012-01 ）
+          </div>
+          <div class="card-block">
+            <blockquote class="card-blockquote">
+              <div class="row">
+                <div class="col-sm-12">
+                  <h5><span class="badge badge-custom"><var>y</var> = <var>a</var> + <var>b</var> * <var>x</var> + <var>c</var> * <var>x²</var></span></h5>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-sm-2">
+                  <label class="col-form-label">縣市：</label>
+                </div>
+                <div class="col-sm-10">
+                  <select id="optionCity" class="form-control" [(ngModel)]="cityYearSelect" (ngModelChange)="optionYearChange($event)">
+                      <option disabled [ngValue]="-1">請選擇縣市</option>
+                      <option *ngFor="let option of cityYearGroup; let itemIndex=i ndex" [ngValue]="option.enName" >{{option.chName }}</option>
+                  </select>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-sm-2">
+                  <label class="col-form-label">指標：</label>
+                </div>
+                <div class="col-sm-10">
+                  <nouislider class="nouislider" [min]="1" [max]="250" [step]="1" [(ngModel)]="yearValueSlider
+           " (ngModelChange)="onYearSliderChange($event)" [disabled]="yearActiveSlider"></nouislider>
+                </div>
+              </div>
+              <div class="row fix-col">
+                <div class="col-sm-3">
+                  <label class="col-form-label">估計年月：</label>
+                </div>
+                <div class="col-sm-9">
+                  <label class="col-form-label">{{yearDateSlider}}</label>
+                </div>
+              </div>
+              <table class="table table-bordered table-inverse table-custom">
+                <thead>
+                  <tr>
+                    <th>0~17</th>
+                    <th>17~65</th>
+                    <th>65歲以上</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>{{ yearDataPercent[0] }}%</td>
+                    <td>{{ yearDataPercent[1] }}%</td>
+                    <td>{{ yearDataPercent[2] }}%</td>
+                  </tr>
+                </tbody>
+              </table>
+            </blockquote>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-6">
+        <div class="card">
+          <div class="card-header card-custom">
+            <i class="fa fa-table" aria-hidden="true"></i>&nbsp;人口數量預估（ 2007-01 ）
+          </div>
+          <div class="card-block">
+            <blockquote class="card-blockquote">
+              <div class="row">
+                <div class="col-sm-12">
+                  <h5><span class="badge badge-custom"><var>y</var> = <var>a</var> + <var>b</var> * <var>x</var> + <var>c</var> * <var>x²</var></span></h5>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-sm-2">
+                  <label class="col-form-label">縣市：</label>
+                </div>
+                <div class="col-sm-10">
+                  <select id="optionCity" class="form-control" [(ngModel)]="cityPopuSelect" (ngModelChange)="optionPopuChange($event)">
+                      <option disabled [ngValue]="-1">請選擇縣市</option>
+                      <option *ngFor="let option of cityPopuGroup; let itemIndex=i ndex" [ngValue]="option.enName">{{option.chName }}</option>
+                  </select>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-sm-2">
+                  <label class="col-form-label">指標：</label>
+                </div>
+                <div class="col-sm-10">
+                  <nouislider class="nouislider" [min]="1" [max]="180" [step]="1" [(ngModel)]="popuValueSlider
+           " (ngModelChange)="onPopuSliderChange($event)" [disabled]="popuActiveSlider"></nouislider>
+                </div>
+              </div>
+              <div class="row fix-col">
+                <div class="col-sm-3">
+                  <label class="col-form-label">估計年月：</label>
+                </div>
+                <div class="col-sm-9 text-left">
+                  <label class="col-form-label">{{popuDateSlider}}</label>
+                </div>
+              </div>
+              <table class="table table-bordered table-inverse table-custom">
+                <thead>
+                  <tr>
+                    <th>總人口數</th>
+                    <th>自然成長係數</th>
+                    <th>社會成長係數</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>{{ popuDataPercent[0] }}人</td>
+                    <td>{{ popuDataPercent[1] }}%</td>
+                    <td>{{ popuDataPercent[2] }}%</td>
+                  </tr>
+                </tbody>
+              </table>
+            </blockquote>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div id="charGroup" class="container">
+    <div class="row">
+      <div class="col-xl-4 col-sm-6 mb-4">
+        <div class="card h-100">
+          <div class="card-header card-inverse">
+            <i class="fa fa-pie-chart"></i> 年齡結構分析
+          </div>
+          <div class="card-block">
+            <canvas baseChart [data]="yearDataPercent" [labels]="doughnutChartLabels" [chartType]="doughnutChartType"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-xl-4 col-sm-6 mb-4">
+        <div class="card h-100">
+          <div class="card-header card-inverse">
+            <i class="fa fa-area-chart"></i> 扶養比
+          </div>
+          <div id="carePercent" class="card-block">
+            <div class="row text-center">
+              <div class="col-12">
+                <i class="fa fa-blind fa-3x" aria-hidden="true" *ngFor="let i of yearCountOldMan"></i>
+              </div>
+            </div>
+            <div class="row text-center">
+              <div class="col-12">
+                <h1 class="text-center card-title">{{ yearCountPercent }}%</h1>
+              </div>
+            </div>
+            <div class="row text-center">
+              <div class="col-12">
+                <i class="fa fa-male fa-3x" aria-hidden="true" *ngFor="let i of yearCountMale"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-xl-4 col-sm-6 mb-4">
+        <div class="card h-100">
+          <div class="card-header card-inverse">
+            <i class="fa fa-bar-chart"></i> 人口數量預測
+          </div>
+          <div class="card-block">
+            <canvas baseChart [datasets]="barChartData" [labels]="barChartLabels" [options]="barChartOptions
+           " [legend]="barChartLegend" [chartType]="barChartType"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- <div class="col-xl-4 col-sm-6 mb-4">
+        <div class="card h-100">
+          <div class="card-header card-inverse">
+            <i class="fa fa-area-chart"></i> 區域社福評估
+          </div>
+          <div class="card-block">
+            <canvas baseChart [datasets]="radarChartData" [labels]="radarChartLabels" [chartType]="radarChartType
+           " [colors]="radarChartOptions"></canvas>
+          </div>
+        </div>
+      </div> -->
+    </div>
+  </div>
+
+</div>
