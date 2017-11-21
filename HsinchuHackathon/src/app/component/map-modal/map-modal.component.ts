@@ -12,10 +12,6 @@ import { Marker } from '../../class/marker';
 
 import { MapsAPILoader } from '@agm/core';
 
-import { Park } from '../../class/park';
-
-
-
 declare let jquery: any;
 declare let $: any;
 
@@ -49,16 +45,20 @@ export class MapModalComponent implements OnInit {
   geoLayerCounty: Object = null;
   geoLayerPark: Object = null;
   geoLayerMonitor: Object = null;
+  geoLayerAniHospi: Object = null;
+  geoLayerKinderGarten: Object = null;
 
   // 圖層是否顯示
   geoLayerShowCounty: boolean = false;
   geoLayerShowPark: boolean = false;
   geoLayerShowMonitor: boolean = false;
+  geoLayerShowAniHospi: boolean = false;
+  geoLayerShowKinderGarten: boolean = false;
 
   // 點位訊息小窗
   infowinLat: number = 23.458987;
   infowinLng: number = 120.29294219999997;
-  infowinMsg: string[] = ['', '', ''];
+  infowinMsg: string[] = ['', '', '', '', '', '', '', '', '', '', '', ''];
   infowinIsOpen: boolean = false;
 
   // 年齡結構 - 卷軸
@@ -143,6 +143,8 @@ export class MapModalComponent implements OnInit {
       isExpanded: true,
       children: [
         { id: 21, name: '公有停車場' },
+        { id: 22, name: '動物醫院' },
+        { id: 23, name: '幼兒園' },
       ]
     }, {
       id: 3,
@@ -188,6 +190,12 @@ export class MapModalComponent implements OnInit {
     await this.layerService.getPointerLayer('監視器.csv')
       .subscribe(result => this.geoLayerMonitor = result);
 
+    await this.layerService.getPointerLayer('新竹市動物醫院.csv')
+      .subscribe(result => this.geoLayerAniHospi = result);
+
+    await this.layerService.getPointerLayer('新竹市幼兒園名錄.csv')
+      .subscribe(result => this.geoLayerKinderGarten = result);
+
   }
 
   /**
@@ -200,17 +208,9 @@ export class MapModalComponent implements OnInit {
     this.infowinLat = feature.lat + 0.00008;
     this.infowinLng = feature.lng;
     this.infowinMsg[0] = feature.name;
-    this.infowinMsg[1] = feature.address;
+    this.infowinMsg[1] = feature.addr;
+    this.infowinMsg[2] = feature.tel;
 
-    if (feature.level) {
-      this.infowinMsg[2] = `長照等級：${feature.level}`;
-    } else if (feature.date) {
-      this.infowinMsg[2] = `事件時間：${feature.date}`;
-    } else if (feature.lordgod) {
-      this.infowinMsg[2] = `寺廟主神：${feature.lordgod}`;
-    } else {
-      this.infowinMsg[2] = null;
-    }
     this.infowinIsOpen = true;
   }
 
@@ -322,6 +322,12 @@ export class MapModalComponent implements OnInit {
         break;
       case 'monitor':
         icon = 'assets/images/secure.png';
+        break;
+      case 'anihospi':
+        icon = 'assets/images/hospi.png';
+        break;
+      case 'kindergarten':
+        icon = 'assets/images/a.png';
         break;
     }
 
@@ -449,12 +455,22 @@ export class MapModalComponent implements OnInit {
       case 2:
         if (node.data.checked) {
           this.geoLayerShowPark = true;
+          this.geoLayerShowAniHospi = true;
+          this.geoLayerShowKinderGarten = true;
         } else {
           this.geoLayerShowPark = false;
+          this.geoLayerShowAniHospi = false;
+          this.geoLayerShowKinderGarten = false;
         }
         break;
       case 21:
         this.geoLayerShowPark = !this.geoLayerShowPark;
+        break;
+      case 22:
+        this.geoLayerShowAniHospi = !this.geoLayerShowAniHospi;
+        break;
+      case 23:
+        this.geoLayerShowKinderGarten = !this.geoLayerShowKinderGarten;
         break;
       case 3:
         if (node.data.checked) {

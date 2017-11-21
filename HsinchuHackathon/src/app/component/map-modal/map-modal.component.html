@@ -135,6 +135,10 @@
               [style]="styleLayer"></agm-data-layer>
             <agm-data-layer *ngIf="geoLayerShowMonitor" [geoJson]="geoLayerMonitor" (layerClick)="infoWindow.open();geoLayerClick($event)"
               [style]="styleLayer"></agm-data-layer>
+            <agm-data-layer *ngIf="geoLayerShowAniHospi" [geoJson]="geoLayerAniHospi" (layerClick)="infoWindow.open();geoLayerClick($event)"
+              [style]="styleLayer"></agm-data-layer>
+            <agm-data-layer *ngIf="geoLayerShowKinderGarten" [geoJson]="geoLayerKinderGarten" (layerClick)="infoWindow.open();geoLayerClick($event)"
+              [style]="styleLayer"></agm-data-layer>
             <agm-info-window #infoWindow [isOpen]="infowinIsOpen" [latitude]="infowinLat" [longitude]="infowinLng">
               <strong>{{infowinMsg[0]}}</strong>
               <p>{{infowinMsg[1]}}</p>
