@@ -9,14 +9,13 @@ import { YearStructureService } from '../../service/year-structure.service';
 import { PopulationStructureService } from '../../service/population-structure.service';
 
 import { Marker } from '../../class/marker';
-import { City } from '../../class/city';
-import { Hospi } from '../../class/Hospi';
-import { Secure } from '../../class/secure';
-import { Temple } from '../../class/temple';
-import { Burglary } from '../../class/burglary';
-
 
 import { MapsAPILoader } from '@agm/core';
+
+import { Park } from '../../class/park';
+
+
+
 declare let jquery: any;
 declare let $: any;
 
@@ -44,15 +43,17 @@ export class MapModalComponent implements OnInit {
   addr: string = "新竹市體育館";
 
   // 分析統計
-  countSecure: number = 17;
+  countPark: number = 17;
 
   // 圖層資料
   geoLayerCounty: Object = null;
-  geoLayerSecure: Object = null;
+  geoLayerPark: Object = null;
+  geoLayerMonitor: Object = null;
 
   // 圖層是否顯示
   geoLayerShowCounty: boolean = false;
-  geoLayerShowSecure: boolean = false;
+  geoLayerShowPark: boolean = false;
+  geoLayerShowMonitor: boolean = false;
 
   // 點位訊息小窗
   infowinLat: number = 23.458987;
@@ -82,14 +83,6 @@ export class MapModalComponent implements OnInit {
   popuData: any[] = [];
   popuDataFilter: any[] = [];
   popuDataPercent: any[] = [50, 50, 50];
-
-  // 年齡結構 - 下拉式選單 
-  cityYearSelect: string = new City().cityGroup[1].enName;
-  cityYearGroup: any[] = new City().cityGroup;
-
-  // 人口結構 - 下拉式選單
-  cityPopuSelect: string = new City().cityGroup[1].enName;
-  cityPopuGroup: any[] = new City().cityGroup;
 
   // 圖表 - 年齡結構分析
   doughnutChartLabels: string[] = ['~17', '18~65', '65~',];
@@ -146,10 +139,17 @@ export class MapModalComponent implements OnInit {
     },
     {
       id: 2,
-      name: '指標圖層',
+      name: '便利',
       isExpanded: true,
       children: [
-        { id: 21, name: '監視器' },
+        { id: 21, name: '公有停車場' },
+      ]
+    }, {
+      id: 3,
+      name: '安全',
+      isExpanded: true,
+      children: [
+        { id: 31, name: '監視器' },
       ]
     }
   ];
@@ -170,8 +170,8 @@ export class MapModalComponent implements OnInit {
     this.LoadAllLayer();
 
     // 載入圖表資料
-    this.optionPopuChange('Chiayi');
-    this.optionYearChange('Chiayi');
+    // this.optionPopuChange('Chiayi');
+    // this.optionYearChange('Chiayi');
   }
 
   /**
@@ -179,33 +179,14 @@ export class MapModalComponent implements OnInit {
    */
   public async LoadAllLayer() {
 
-    console.log(`Load: start ${new Date()}`);
     await this.layerService.getGeoJsonLayer('county')
-      .subscribe(
-      result => {
-        this.zone.run(() => {
-          this.geoLayerCounty = result;
-          console.log(`Load: County ${new Date()}`);
-        });
-      });
+      .subscribe(result => this.geoLayerCounty = result);
 
-    await this.layerService.getPointerLayer('secure', 'Chiayi')
-      .subscribe(
-      result => {
-        this.zone.run(async () => {
+    await this.layerService.getPointerLayer('新竹市公有停車場相關資訊.csv')
+      .subscribe(result => this.geoLayerPark = result);
 
-          this.layerService.getSecureGeoJson(result);
-
-          await this.layerService.getPointerLayer('secure', 'Yunlin')
-            .subscribe(
-            result => {
-              this.zone.run(() => {
-                this.geoLayerSecure = this.layerService.getSecureGeoJson(result);
-                console.log(`Load: Secure ${new Date()}`);
-              });
-            });
-        });
-      });
+    await this.layerService.getPointerLayer('監視器.csv')
+      .subscribe(result => this.geoLayerMonitor = result);
 
   }
 
@@ -238,9 +219,9 @@ export class MapModalComponent implements OnInit {
    */
   public analyticsPointer() {
 
-    this.countSecure = 0;
+    this.countPark = 0;
 
-    this.geoLayerSecure['features'].forEach(async (element) => {
+    this.geoLayerPark['features'].forEach(async (element) => {
       let lat = Number(element.geometry.coordinates[1]);
       let lng = Number(element.geometry.coordinates[0]);
       let p2 = [lat, lng];
@@ -249,7 +230,7 @@ export class MapModalComponent implements OnInit {
         result => {
           this.zone.run(() => {
             if (result <= this.radius) {
-              this.countSecure++;
+              this.countPark++;
             }
           });
         });
@@ -260,7 +241,7 @@ export class MapModalComponent implements OnInit {
     this.radarChartData = [
       {
         data: [
-          this.countSecure],
+          this.countPark],
         label: this.addr
       }
     ];
@@ -313,35 +294,13 @@ export class MapModalComponent implements OnInit {
     if ($('.gmap-loading').css('display') != 'none') {
       setTimeout(() => {
         $('.gmap-loading').hide();
-      }, 3000);
+      }, 1000);
     }
 
     let icon, visible = true, color = 'green';
     // console.log(feature);
 
-    if (feature.getProperty('VILLNAME') != undefined) {
-      console.log('load 村里');
-      if (
-        feature.getProperty('COUNTYNAME') === '新竹市'
-      ) {
-        color = 'green';
-        visible = true;
-      } else {
-        visible = false;
-      }
-    } else if (feature.getProperty('COUNTYNAME') != undefined && feature.getProperty('COUNTYENG') == undefined) {
-      console.log('load 鄉鎮');
-      if (
-        feature.getProperty('COUNTYNAME') === '新竹市'
-      ) {
-        color = 'blue';
-        visible = true;
-      } else {
-        visible = false;
-      }
-    } else if (feature.getProperty('address') != undefined) {
-      visible = true;
-    } else if (feature.getProperty('COUNTYENG') != '') {
+    if (feature.getProperty('COUNTYENG') != '') {
       console.log('load 縣市');
       if (
         feature.getProperty('COUNTYENG') == 'Hsinchu City'
@@ -353,45 +312,16 @@ export class MapModalComponent implements OnInit {
       }
     }
 
+    if (feature.getProperty('group') != undefined) {
+      visible = true;
+    }
+
     switch (feature.getProperty('group')) {
-      case 'hospi':
-        icon = 'assets/images/hospi.png';
+      case 'park':
+        icon = 'assets/images/c.png';
         break;
-
-      case 'abc':
-        switch (feature.getProperty('level')) {
-          case 'A':
-            icon = 'assets/images/a.png';
-            break;
-
-          case 'B':
-            icon = 'assets/images/b.png';
-            break;
-
-          case 'C':
-            icon = 'assets/images/c.png';
-            break;
-        }
-        break;
-
-      case 'secure':
+      case 'monitor':
         icon = 'assets/images/secure.png';
-        break;
-
-      case 'burglary':
-        icon = 'assets/images/burglary.png';
-        break;
-
-      case 'care':
-        icon = 'assets/images/care.png';
-        break;
-
-      case 'temple':
-        icon = 'assets/images/temple.png';
-        break;
-
-      case 'school':
-        icon = 'assets/images/school.png';
         break;
     }
 
@@ -429,69 +359,69 @@ export class MapModalComponent implements OnInit {
     }
   }
 
-  /**
-   * 卷軸 - 年齡結構
-   * @param no 
-   */
-  public onYearSliderChange(no: number) {
-    this.yearDataPercent = this.yearService.getStructurePercent(this.cityYearSelect, no);
-    let _mon = no % 12 == 0 ? 12 : no % 12;
-    let _year = no / 12 == 0 ? 2012 : Math.floor(no / 12) + 2012;
-    this.yearDateSlider = `${_year}年 - ${_mon}月`;
+  // /**
+  //  * 卷軸 - 年齡結構
+  //  * @param no 
+  //  */
+  // public onYearSliderChange(no: number) {
+  //   this.yearDataPercent = this.yearService.getStructurePercent(this.cityYearSelect, no);
+  //   let _mon = no % 12 == 0 ? 12 : no % 12;
+  //   let _year = no / 12 == 0 ? 2012 : Math.floor(no / 12) + 2012;
+  //   this.yearDateSlider = `${_year}年 - ${_mon}月`;
 
-    // 扶養比
-    this.yearCountPercent = Number(Number((Number(this.yearDataPercent[0]) + Number(this.yearDataPercent[2])) / this.yearDataPercent[1] * 100).toFixed(2));
-    var old = Number(this.yearCountPercent / 10);
-    this.yearCountOldMan = [];
-    for (let i = 1; i <= old; i++) {
-      this.yearCountOldMan.push(i);
-    }
-    var man = 10;
-    this.yearCountMale = [];
-    for (let j = 1; j <= man; j++) {
-      this.yearCountMale.push(j);
-    }
-  }
+  //   // 扶養比
+  //   this.yearCountPercent = Number(Number((Number(this.yearDataPercent[0]) + Number(this.yearDataPercent[2])) / this.yearDataPercent[1] * 100).toFixed(2));
+  //   var old = Number(this.yearCountPercent / 10);
+  //   this.yearCountOldMan = [];
+  //   for (let i = 1; i <= old; i++) {
+  //     this.yearCountOldMan.push(i);
+  //   }
+  //   var man = 10;
+  //   this.yearCountMale = [];
+  //   for (let j = 1; j <= man; j++) {
+  //     this.yearCountMale.push(j);
+  //   }
+  // }
 
-  /**
-   * 下拉式選單 - 人口結構
-   * @param city 
-   */
-  public optionPopuChange(city: any) {
-    this.popuDataPercent = this.popuService.getPopulationPercent(city, this.yearValueSlider)[0];
-    this.popuActiveSlider = ''; // 選擇縣市後才可以滑動 Slider
-    this.onPopuSliderChange(41);
-  }
+  // /**
+  //  * 下拉式選單 - 人口結構
+  //  * @param city 
+  //  */
+  // public optionPopuChange(city: any) {
+  //   this.popuDataPercent = this.popuService.getPopulationPercent(city, this.yearValueSlider)[0];
+  //   this.popuActiveSlider = ''; // 選擇縣市後才可以滑動 Slider
+  //   this.onPopuSliderChange(41);
+  // }
 
-  /**
-   * 卷軸 - 年齡結構
-   * @param no 
-   */
-  public onPopuSliderChange(no: number) {
-    this.popuDataPercent = this.popuService.getPopulationPercent(this.cityPopuSelect, no);
-    let _mon = no % 4 == 0 ? 4 : no % 4;
-    let _year = no / 4 == 0 ? 2007 : Math.floor(no / 4) + 2007;
-    this.popuDateSlider = `${_year}年 - 第${_mon}季`;
+  // /**
+  //  * 卷軸 - 年齡結構
+  //  * @param no 
+  //  */
+  // public onPopuSliderChange(no: number) {
+  //   this.popuDataPercent = this.popuService.getPopulationPercent(this.cityPopuSelect, no);
+  //   let _mon = no % 4 == 0 ? 4 : no % 4;
+  //   let _year = no / 4 == 0 ? 2007 : Math.floor(no / 4) + 2007;
+  //   this.popuDateSlider = `${_year}年 - 第${_mon}季`;
 
-    let popuNow = Number(this.popuService.getPopulationPercent(this.cityPopuSelect, no)[0]);
-    let popu1 = Number(this.popuService.getPopulationPercent(this.cityPopuSelect, no + 4)[0]);
-    let popu2 = Number(this.popuService.getPopulationPercent(this.cityPopuSelect, no + 8)[0]);
-    let popu3 = Number(this.popuService.getPopulationPercent(this.cityPopuSelect, no + 12)[0]);
-    let popu4 = Number(this.popuService.getPopulationPercent(this.cityPopuSelect, no + 16)[0]);
-    this.barChartData = [{ data: [popuNow, popu1, popu2, popu3, popu4], label: this.cityPopuSelect }];
+  //   let popuNow = Number(this.popuService.getPopulationPercent(this.cityPopuSelect, no)[0]);
+  //   let popu1 = Number(this.popuService.getPopulationPercent(this.cityPopuSelect, no + 4)[0]);
+  //   let popu2 = Number(this.popuService.getPopulationPercent(this.cityPopuSelect, no + 8)[0]);
+  //   let popu3 = Number(this.popuService.getPopulationPercent(this.cityPopuSelect, no + 12)[0]);
+  //   let popu4 = Number(this.popuService.getPopulationPercent(this.cityPopuSelect, no + 16)[0]);
+  //   this.barChartData = [{ data: [popuNow, popu1, popu2, popu3, popu4], label: this.cityPopuSelect }];
 
-    let bartmpLabels = [
-      `${_year}-${_mon}(季)`,
-      `${_year + 1}`,
-      `${_year + 2}`,
-      `${_year + 3}`,
-      `${_year + 4}`,
-    ];
-    this.barChartLabels.length = 0;
-    for (let i = 0; i < bartmpLabels.length; i++) {
-      this.barChartLabels.push(bartmpLabels[i]);
-    }
-  }
+  //   let bartmpLabels = [
+  //     `${_year}-${_mon}(季)`,
+  //     `${_year + 1}`,
+  //     `${_year + 2}`,
+  //     `${_year + 3}`,
+  //     `${_year + 4}`,
+  //   ];
+  //   this.barChartLabels.length = 0;
+  //   for (let i = 0; i < bartmpLabels.length; i++) {
+  //     this.barChartLabels.push(bartmpLabels[i]);
+  //   }
+  // }
 
   /**
    * 圖層控制
@@ -518,13 +448,23 @@ export class MapModalComponent implements OnInit {
         break;
       case 2:
         if (node.data.checked) {
-          this.geoLayerShowSecure = true;
+          this.geoLayerShowPark = true;
         } else {
-          this.geoLayerShowSecure = false;
+          this.geoLayerShowPark = false;
         }
         break;
       case 21:
-        this.geoLayerShowSecure = !this.geoLayerShowSecure;
+        this.geoLayerShowPark = !this.geoLayerShowPark;
+        break;
+      case 3:
+        if (node.data.checked) {
+          this.geoLayerShowMonitor = true;
+        } else {
+          this.geoLayerShowMonitor = false;
+        }
+        break;
+      case 31:
+        this.geoLayerShowMonitor = !this.geoLayerShowMonitor;
         break;
     }
   }
