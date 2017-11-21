@@ -44,37 +44,15 @@ export class MapModalComponent implements OnInit {
   addr: string = "新竹市體育館";
 
   // 分析統計
-  countHospi: number = 7;
   countSecure: number = 17;
-  countCare: number = 3;
-  countTemple: number = 2;
-  countBurglary: number = 1;
-  countSchool: number = 0;
-  countABC: number = 0;
 
   // 圖層資料
   geoLayerCounty: Object = null;
-  geoLayerTown: Object = null;
-  geoLayerVillage: Object = null;
-  geoLayerHospi: Object = null;
   geoLayerSecure: Object = null;
-  geoLayerCare: Object = null;
-  geoLayerTemple: Object = null;
-  geoLayerBurglary: Object = null;
-  geoLayerSchool: Object = null;
-  geoLayerABC: Object = null;
 
   // 圖層是否顯示
   geoLayerShowCounty: boolean = false;
-  geoLayerShowTown: boolean = false;
-  geoLayerShowVillage: boolean = false;
-  geoLayerShowHospi: boolean = false;
   geoLayerShowSecure: boolean = false;
-  geoLayerShowCare: boolean = false;
-  geoLayerShowTemple: boolean = false;
-  geoLayerShowBurglary: boolean = false;
-  geoLayerShowSchool: boolean = false;
-  geoLayerShowABC: boolean = false;
 
   // 點位訊息小窗
   infowinLat: number = 23.458987;
@@ -99,7 +77,6 @@ export class MapModalComponent implements OnInit {
   yearCountOldMan: number[] = [1, 2, 3, 4];
   yearCountMale: number[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
   yearCountPercent: number = 51.13;
-
 
   // 人口結構 - 圖表
   popuData: any[] = [];
@@ -173,12 +150,6 @@ export class MapModalComponent implements OnInit {
       isExpanded: true,
       children: [
         { id: 21, name: '監視器' },
-        { id: 22, name: '醫院診所' },
-        { id: 23, name: '照護機構' },
-        { id: 24, name: '宗教建設' },
-        { id: 25, name: '竊盜紀錄' },
-        { id: 26, name: '國民中學' },
-        { id: 27, name: '長照ABC' },
       ]
     }
   ];
@@ -218,15 +189,6 @@ export class MapModalComponent implements OnInit {
         });
       });
 
-    await this.layerService.getGeoJsonLayer('town')
-      .subscribe(
-      result => {
-        this.zone.run(() => {
-          this.geoLayerTown = result;
-          console.log(`Load: Town ${new Date()}`);
-        });
-      });
-
     await this.layerService.getPointerLayer('secure', 'Chiayi')
       .subscribe(
       result => {
@@ -245,100 +207,6 @@ export class MapModalComponent implements OnInit {
         });
       });
 
-    await this.layerService.getPointerLayer('burglary', 'Chiayi')
-      .subscribe(
-      result => {
-        this.zone.run(async () => {
-
-          this.layerService.getBurglaryGeoJson(result);
-
-          await this.layerService.getPointerLayer('burglary', 'Yunlin')
-            .subscribe(
-            result => {
-              this.zone.run(() => {
-                this.geoLayerBurglary = this.layerService.getBurglaryGeoJson(result);
-                console.log(`Load: Burglary ${new Date()}`);
-              });
-            });
-        });
-      });
-
-    await this.layerService.getPointerLayer('care', 'Chiayi')
-      .subscribe(
-      result => {
-        this.zone.run(async () => {
-
-          this.layerService.getCareGeoJson(result);
-
-          await this.layerService.getPointerLayer('care', 'Yunlin')
-            .subscribe(
-            result => {
-              this.zone.run(() => {
-                this.geoLayerCare = this.layerService.getCareGeoJson(result);
-                console.log(`Load: Care ${new Date()}`);
-              });
-            });
-        });
-      });
-
-    await this.layerService.getPointerLayer('temple', 'Chiayi')
-      .subscribe(
-      result => {
-        this.zone.run(async () => {
-
-          this.layerService.getTempleGeoJson(result);
-
-          await this.layerService.getPointerLayer('temple', 'Yunlin')
-            .subscribe(
-            result => {
-              this.zone.run(() => {
-                this.geoLayerTemple = this.layerService.getTempleGeoJson(result);
-                console.log(`Load: Temple ${new Date()}`);
-              });
-            });
-        });
-      });
-
-    await this.layerService.getPointerLayer('hospi', 'Chiayi')
-      .subscribe(
-      result => {
-        this.zone.run(async () => {
-
-          this.layerService.getHospiGeoJson(result);
-
-          await this.layerService.getPointerLayer('hospi', 'Yunlin')
-            .subscribe(
-            result => {
-              this.zone.run(async () => {
-
-                this.geoLayerHospi = this.layerService.getHospiGeoJson(result);
-                console.log(`Load: Hospi ${new Date()}`);
-
-              });
-            });
-        });
-      });
-
-    await this.layerService.getPointerLayer('abc', 'abc')
-      .subscribe(
-      result => {
-        this.zone.run(async () => {
-
-          this.geoLayerABC = this.layerService.getABCGeoJson(result);
-          console.log(`Load: ABC ${new Date()}`);
-        });
-      });
-
-    await this.layerService.getPointerLayer('school', 'ChiaYu')
-      .subscribe(
-      result => {
-        this.zone.run(async () => {
-
-          this.geoLayerSchool = this.layerService.getSchoolGeoJson(result);
-          console.log(`Load: School ${new Date()}`);
-
-        });
-      });
   }
 
   /**
@@ -371,71 +239,6 @@ export class MapModalComponent implements OnInit {
   public analyticsPointer() {
 
     this.countSecure = 0;
-    this.countCare = 0;
-    this.countTemple = 0;
-    this.countHospi = 0;
-    this.countSchool = 0;
-    this.countABC = 0;
-
-    this.geoLayerHospi['features'].forEach(async (element) => {
-      let lat = Number(element.geometry.coordinates[1]);
-      let lng = Number(element.geometry.coordinates[0]);
-      let p2 = [lat, lng];
-      await this.gmapService.getDistance([this.lat, this.lng], p2)
-        .subscribe(
-        result => {
-          this.zone.run(() => {
-            if (result <= this.radius) {
-              this.countHospi++;
-            }
-          });
-        });
-    });
-
-    this.geoLayerABC['features'].forEach(async (element) => {
-      let lat = Number(element.geometry.coordinates[1]);
-      let lng = Number(element.geometry.coordinates[0]);
-      let p2 = [lat, lng];
-      await this.gmapService.getDistance([this.lat, this.lng], p2)
-        .subscribe(
-        result => {
-          this.zone.run(() => {
-            if (result <= this.radius) {
-              this.countABC++;
-            }
-          });
-        });
-    });
-
-    this.geoLayerTemple['features'].forEach(async (element) => {
-      let lat = Number(element.geometry.coordinates[1]);
-      let lng = Number(element.geometry.coordinates[0]);
-      let p2 = [lat, lng];
-      await this.gmapService.getDistance([this.lat, this.lng], p2)
-        .subscribe(
-        result => {
-          this.zone.run(() => {
-            if (result <= this.radius) {
-              this.countTemple++;
-            }
-          });
-        });
-    });
-
-    this.geoLayerCare['features'].forEach(async (element) => {
-      let lat = Number(element.geometry.coordinates[1]);
-      let lng = Number(element.geometry.coordinates[0]);
-      let p2 = [lat, lng];
-      await this.gmapService.getDistance([this.lat, this.lng], p2)
-        .subscribe(
-        result => {
-          this.zone.run(() => {
-            if (result <= this.radius) {
-              this.countCare++;
-            }
-          });
-        });
-    });
 
     this.geoLayerSecure['features'].forEach(async (element) => {
       let lat = Number(element.geometry.coordinates[1]);
@@ -452,45 +255,12 @@ export class MapModalComponent implements OnInit {
         });
     });
 
-    this.geoLayerBurglary['features'].forEach(async (element) => {
-      let lat = Number(element.geometry.coordinates[1]);
-      let lng = Number(element.geometry.coordinates[0]);
-      let p2 = [lat, lng];
-      await this.gmapService.getDistance([this.lat, this.lng], p2)
-        .subscribe(
-        result => {
-          this.zone.run(() => {
-            if (result <= this.radius) {
-              this.countBurglary++;
-            }
-          });
-        });
-    });
-
-    this.geoLayerSchool['features'].forEach(async (element) => {
-      let lat = Number(element.geometry.coordinates[1]);
-      let lng = Number(element.geometry.coordinates[0]);
-      let p2 = [lat, lng];
-      await this.gmapService.getDistance([this.lat, this.lng], p2)
-        .subscribe(
-        result => {
-          this.zone.run(() => {
-            if (result <= this.radius) {
-              this.countSchool++;
-            }
-          });
-        });
-    });
 
     // 分析完後要更新圖表 - 區域社福評估
     this.radarChartData = [
       {
         data: [
-          this.countSecure,
-          this.countHospi,
-          this.countCare,
-          this.countTemple,
-          this.countBurglary],
+          this.countSecure],
         label: this.addr
       }
     ];
@@ -739,64 +509,22 @@ export class MapModalComponent implements OnInit {
       case 1:
         if (node.data.checked) {
           this.geoLayerShowCounty = true;
-          this.geoLayerShowTown = true;
-          this.geoLayerShowVillage = true;
         } else {
           this.geoLayerShowCounty = false;
-          this.geoLayerShowTown = false;
-          this.geoLayerShowVillage = false;
         }
         break;
       case 11:
         this.geoLayerShowCounty = !this.geoLayerShowCounty;
         break;
-      case 12:
-        this.geoLayerShowTown = !this.geoLayerShowTown;
-        break;
-      case 13:
-        this.geoLayerShowVillage = !this.geoLayerShowVillage;
-        break;
-
       case 2:
         if (node.data.checked) {
           this.geoLayerShowSecure = true;
-          this.geoLayerShowHospi = true;
-          this.geoLayerShowCare = true;
-          this.geoLayerShowTemple = true;
-          this.geoLayerShowBurglary = true;
-          this.geoLayerShowSchool = true;
-          this.geoLayerShowABC = true;
-
         } else {
           this.geoLayerShowSecure = false;
-          this.geoLayerShowHospi = false;
-          this.geoLayerShowCare = false;
-          this.geoLayerShowTemple = false;
-          this.geoLayerShowBurglary = false;
-          this.geoLayerShowSchool = false;
-          this.geoLayerShowABC = false;
         }
         break;
       case 21:
         this.geoLayerShowSecure = !this.geoLayerShowSecure;
-        break;
-      case 22:
-        this.geoLayerShowHospi = !this.geoLayerShowHospi;
-        break;
-      case 23:
-        this.geoLayerShowCare = !this.geoLayerShowCare;
-        break;
-      case 24:
-        this.geoLayerShowTemple = !this.geoLayerShowTemple;
-        break;
-      case 25:
-        this.geoLayerShowBurglary = !this.geoLayerShowBurglary;
-        break;
-      case 26:
-        this.geoLayerShowSchool = !this.geoLayerShowSchool;
-        break;
-      case 27:
-        this.geoLayerShowABC = !this.geoLayerShowABC;
         break;
     }
   }

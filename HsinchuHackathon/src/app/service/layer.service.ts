@@ -13,6 +13,7 @@ import { Care } from '../class/care';
 import { Temple } from '../class/temple';
 import { Burglary } from '../class/burglary';
 import { School } from '../class/school';
+import { Truck } from '../class/truck';
 
 @Injectable()
 export class LayerService {
@@ -24,6 +25,7 @@ export class LayerService {
   private burglaryGeoJson: GeoJson = new GeoJson();
   private schoolGeoJson: GeoJson = new GeoJson();
   private abcGeoJson: GeoJson = new GeoJson();
+  private truckGeoJson: GeoJson = new GeoJson();
 
   private hospi: Hospi;
   private abc: Hospi;
@@ -32,6 +34,7 @@ export class LayerService {
   private temple: Temple;
   private burglary: Burglary;
   private school: School;
+  private truck: Truck;
 
   private hospiArr: Hospi[];
   private abcArr: Hospi[];
@@ -40,6 +43,7 @@ export class LayerService {
   private templeArr: Temple[];
   private burglaryArr: Burglary[];
   private schoolArr: School[];
+  private truckArr: Truck[];
 
   private fileUrl: string = 'assets/layer/';
   private fileExtend: string[] = ['.csv', '.json'];
@@ -67,35 +71,68 @@ export class LayerService {
    * @param category 
    * @param city 
    */
-  public getPointerLayer(category: string, city: string) {
-    return this.http.get(this.fileUrl + category + '/' + city + this.fileExtend[0])
+  public getPointerLayer(filename: String) {
+    return this.http.get(this.fileUrl + '/' + filename)
       .map(
       (res) => {
-        switch (category) {
+        switch (filename) {
           case 'hospi':
             return this.saveHospi(res);
-
           case 'abc':
             return this.saveABC(res);
-
           case 'secure':
             return this.saveSecure(res);
-
           case 'care':
             return this.saveCare(res);
-
           case 'temple':
             return this.saveTemple(res);
-
           case 'burglary':
             return this.saveBurglary(res);
-
           case 'school':
             return this.saveSchool(res);
+          case 'truck':
+            return this.saveTruck(res);
         }
       }
       );
   }
+
+  /**
+   * Layer - 砂石車路徑
+   * @param res 
+   */
+  public saveTruck(res: Response) {
+    console.log(res);
+
+    // let csvData = res['_body'] || '';
+    // let allTextLines = csvData.split(/\r\n|\n/);
+    // let headers = allTextLines[0].split(',');
+
+    // let lines = [];
+    // for (let i = 1; i < allTextLines.length; i++) {
+
+    //   let data = allTextLines[i].split(',');
+    //   if (data.length == headers.length) {
+
+    //     this.temple = new Temple(
+    //       data[0],  // name
+    //       data[1],  // lordgod
+    //       data[2],  // area
+    //       data[3],  // address
+    //       data[4],  // lat
+    //       data[5]   // lng
+    //     );
+
+    //     lines.push(this.temple);
+    //   }
+    //   this.truckArr = lines;
+
+    // }
+    return this.truckArr;
+  }
+
+
+
 
   /**
    * Layer - 宗教建設

@@ -18,6 +18,22 @@
     height: 100%;
 }
 
+.gmap .result-box {
+    position: absolute;
+    z-index: 99999;
+    top: 0;
+    right: 0;
+    width: 140px;
+    color: #fff;
+    background: rgba(0, 0, 0, .3);
+    border-bottom-left-radius: 8px;
+}
+
+.gmap .result-box p {
+    padding: 0;
+    margin: 8px 12px;
+}
+
 
 /* 
   設計巧思 by Rplus 
