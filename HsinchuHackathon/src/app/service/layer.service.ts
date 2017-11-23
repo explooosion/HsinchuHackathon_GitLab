@@ -12,6 +12,7 @@ import { Park } from '../class/park';
 import { Monitor } from '../class/monitor';
 import { AniHospi } from '../class/anihospi';
 import { KinderGarten } from '../class/kindergarten';
+import { WarningPlace } from '../class/warningplace';
 
 @Injectable()
 export class LayerService {
@@ -26,6 +27,7 @@ export class LayerService {
   private monitorArr: Monitor[];
   private anihospiArr: AniHospi[];
   private kindergartenArr: KinderGarten[];
+  private warningplace: WarningPlace[];
 
   private fileUrl: string = 'assets/layer/';
   private fileExtend: string[] = ['.csv', '.json'];
@@ -239,10 +241,6 @@ export class LayerService {
 
 
 
-
-
-
-
   /**
    * Layer - 新竹市幼兒園名錄
    * @param res 
@@ -259,7 +257,6 @@ export class LayerService {
 
       let data = allTextLines[i].split(',');
       if (data.length == headers.length) {
-
         lines.push(new KinderGarten(
           data[0],
           data[1],
@@ -270,16 +267,18 @@ export class LayerService {
           data[6],
           data[7],
           data[8],
-          data[9]
+          Number(data[9])
         ));
       }
+
+      console.log(lines);
       this.kindergartenArr = lines;
 
     }
 
     let geo = new GeoJson();
 
-    this.kindergartenArr.forEach(element => {
+    this.kindergartenArr.forEach((element: KinderGarten) => {
       geo.features.push(
         new Features(
           {
@@ -304,6 +303,66 @@ export class LayerService {
   }
 
 
+
+  // /**
+  //  * Layer - 新竹市幼兒園名錄
+  //  * @param res 
+  //  */
+  // public saveWarningPlace(res: Response) {
+
+  //   let csvData = res['_body'] || '';
+
+  //   let allTextLines = csvData.split(/\r\n|\n/);
+  //   let headers = allTextLines[0].split(',');
+
+  //   let lines = [];
+  //   for (let i = 1; i < allTextLines.length; i++) {
+
+  //     let data = allTextLines[i].split(',');
+  //     if (data.length == headers.length) {
+
+  //       lines.push(new KinderGarten(
+  //         data[0],
+  //         data[1],
+  //         data[2],
+  //         data[3],
+  //         data[4],
+  //         data[5],
+  //         data[6],
+  //         data[7],
+  //         data[8],
+  //         data[9]
+  //       ));
+  //     }
+  //     this.kindergartenArr = lines;
+
+  //   }
+
+  //   let geo = new GeoJson();
+
+  //   this.kindergartenArr.forEach(element => {
+  //     geo.features.push(
+  //       new Features(
+  //         {
+  //           group: 'kindergarten',
+  //           type: element.type,
+  //           name: element.name,
+  //           found: element.found,
+  //           id: element.id,
+  //           director: element.director,
+  //           tel: element.tel,
+  //           addr: element.addr,
+  //           total: element.total,
+  //           lat: Number(element.lat),
+  //           lng: Number(element.lng),
+  //         },
+  //         new Geometry('Point', [Number(element.lng), Number(element.lat)])
+  //       )
+  //     );
+  //   });
+
+  //   return JSON.parse(JSON.stringify(geo));
+  // }
 
 
 

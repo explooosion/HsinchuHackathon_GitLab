@@ -2,6 +2,7 @@
  * 幼兒園名錄
  */
 export class KinderGarten {
+
     public type: String;
     public name: String;
     public found: String;
