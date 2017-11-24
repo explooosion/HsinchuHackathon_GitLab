@@ -129,16 +129,10 @@
           <agm-map class="gmap-box" [latitude]="lat" [longitude]="lng" [zoom]="zoom" [disableDefaultUI]="false" [fitBounds]="bounds">
             <agm-marker [latitude]=" lat" [longitude]="lng"></agm-marker>
             <agm-circle [latitude]="lat" [longitude]="lng" [radius]="radius" [fillColor]="color" [fillOpacity]="0.6"></agm-circle>
-            <agm-data-layer *ngIf="geoLayerShowCounty" [geoJson]="geoLayerCounty" (layerClick)="infoWindow.open();geoLayerClick($event)"
-              [style]="styleLayer"></agm-data-layer>
-            <agm-data-layer *ngIf="geoLayerShowPark" [geoJson]="geoLayerPark" (layerClick)="infoWindow.open();geoLayerClick($event)"
-              [style]="styleLayer"></agm-data-layer>
-            <agm-data-layer *ngIf="geoLayerShowMonitor" [geoJson]="geoLayerMonitor" (layerClick)="infoWindow.open();geoLayerClick($event)"
-              [style]="styleLayer"></agm-data-layer>
-            <agm-data-layer *ngIf="geoLayerShowAniHospi" [geoJson]="geoLayerAniHospi" (layerClick)="infoWindow.open();geoLayerClick($event)"
-              [style]="styleLayer"></agm-data-layer>
-            <agm-data-layer *ngIf="geoLayerShowKinderGarten" [geoJson]="geoLayerKinderGarten" (layerClick)="infoWindow.open();geoLayerClick($event)"
-              [style]="styleLayer"></agm-data-layer>
+            <!-- 圖層資料 -->
+            <div *ngFor="let g of layerData">
+              <agm-data-layer *ngIf="g.show" [geoJson]="g.geojson" (layerClick)="infoWindow.open();geoLayerClick($event)" [style]="styleLayer"></agm-data-layer>
+            </div>
             <agm-info-window #infoWindow [isOpen]="infowinIsOpen" [latitude]="infowinLat" [longitude]="infowinLng">
               <strong>{{infowinMsg[0]}}</strong>
               <p>{{infowinMsg[1]}}</p>

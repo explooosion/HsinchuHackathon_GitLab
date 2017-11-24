@@ -2,6 +2,7 @@
  * 新竹市公有停車場相關資訊
  */
 export class Park {
+    public group: String = 'park';
     public name: String;
     public carCount: Number;
     public motoCount: Number;
@@ -16,7 +17,8 @@ export class Park {
     public lat: Number;
     public lng: Number;
 
-    constructor(name, carCount, motoCount, addr, serviceTime, payWeek, payWeekend, payMode, other, monthMode, memo, lat, lng) {
+    constructor(data) {
+        const [name, carCount, motoCount, addr, serviceTime, payWeek, payWeekend, payMode, other, monthMode, memo, lat, lng] = data;
         this.name = name;
         this.carCount = carCount;
         this.motoCount = motoCount;

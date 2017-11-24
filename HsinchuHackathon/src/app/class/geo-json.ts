@@ -3,7 +3,7 @@
  */
 export class GeoJson {
 
-    public type: string = 'FeatureCollection';
+    public type: String = 'FeatureCollection';
     public bbox: any[];
     public features: Features[] = [];
 }
@@ -13,8 +13,8 @@ export class GeoJson {
  */
 export class Features {
 
-    public type: string = 'Feature';
-    public properties: any[];
+    public type: String = 'Feature';
+    public properties: any;
     public geometry: Geometry;
 
     constructor(properties, geometry) {
@@ -27,7 +27,7 @@ export class Features {
  * Geometry - 點位的座標屬性
  */
 export class Geometry {
-    
+
     public type: string;
     public coordinates: any[];
 

@@ -1,8 +1,9 @@
 /**
- * 幼兒園名錄
- */
+* 幼兒園名錄
+*/
 export class KinderGarten {
 
+    public group: String = 'kindergarten';
     public type: String;
     public name: String;
     public found: String;
@@ -14,16 +15,19 @@ export class KinderGarten {
     public lat: Number;
     public lng: Number;
 
-    constructor(type, name, found, id, director, tel, addr, total, lat, lng) {
-        this.type = type;
-        this.name = name;
-        this.found = found;
-        this.id = id;
-        this.director = director;
-        this.tel = tel;
-        this.addr = addr;
-        this.total = total;
-        this.lat = lat;
-        this.lng = lng;
+    constructor(data) {
+        if (data) {
+            const [type, name, found, id, director, tel, addr, total, lat, lng] = data;
+            this.type = type;
+            this.name = name;
+            this.found = found;
+            this.id = id;
+            this.director = director;
+            this.tel = tel;
+            this.addr = addr;
+            this.total = total;
+            this.lat = lat;
+            this.lng = lng;
+        }
     }
 }

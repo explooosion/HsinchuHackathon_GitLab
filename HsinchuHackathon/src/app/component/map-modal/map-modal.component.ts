@@ -1,16 +1,18 @@
 import { Component, Input, NgZone, OnInit, NgModule } from '@angular/core';
-
 import { BrowserModule } from '@angular/platform-browser';
 
 import { GMapsService } from '../../service/gmaps.service';
 import { LayerService } from '../../service/layer.service';
-
 import { YearStructureService } from '../../service/year-structure.service';
 import { PopulationStructureService } from '../../service/population-structure.service';
 
 import { Marker } from '../../class/marker';
-
 import { MapsAPILoader } from '@agm/core';
+
+import { LayerControl } from '../../map/layer-control';
+import { LayerData } from '../../map/layer-data';
+
+import { async } from '@angular/core/testing';
 
 declare let jquery: any;
 declare let $: any;
@@ -31,29 +33,21 @@ export class MapModalComponent implements OnInit {
 
   bounds;
   // 初始資料
-  lat: number = 24.799448;
-  lng: number = 120.979021;
-  zoom: number = 16;
-  radius: number = 500; // 半徑(公尺)
+  lat: Number = 24.799448;
+  lng: Number = 120.979021;
+  zoom: Number = 16;
+  radius: Number = 500; // 半徑(公尺)
   color: string = '#aa93d6';
   addr: string = "新竹市體育館";
 
   // 分析統計
   countPark: number = 17;
 
-  // 圖層資料
-  geoLayerCounty: Object = null;
-  geoLayerPark: Object = null;
-  geoLayerMonitor: Object = null;
-  geoLayerAniHospi: Object = null;
-  geoLayerKinderGarten: Object = null;
+  // 圖層清單
+  public layerData = LayerData;
 
-  // 圖層是否顯示
-  geoLayerShowCounty: boolean = false;
-  geoLayerShowPark: boolean = false;
-  geoLayerShowMonitor: boolean = false;
-  geoLayerShowAniHospi: boolean = false;
-  geoLayerShowKinderGarten: boolean = false;
+  // 圖層控制
+  public nodes = LayerControl;
 
   // 點位訊息小窗
   infowinLat: number = 23.458987;
@@ -125,37 +119,6 @@ export class MapModalComponent implements OnInit {
     { data: [524787, 519659, 514201, 508414, 505412], label: '新竹市' }
   ];
 
-  // 圖層清單
-  nodes = [
-    {
-      id: 1,
-      name: '地區圖層',
-      isExpanded: true,
-      children: [
-        { id: 11, name: '新竹市' },
-        // { id: 12, name: '鄉鎮市區界線' },
-        /*{ id: 13, name: '村里界圖' }*/
-      ]
-    },
-    {
-      id: 2,
-      name: '便利',
-      isExpanded: true,
-      children: [
-        { id: 21, name: '公有停車場' },
-        { id: 22, name: '動物醫院' },
-        { id: 23, name: '幼兒園' },
-      ]
-    }, {
-      id: 3,
-      name: '安全',
-      isExpanded: true,
-      children: [
-        { id: 31, name: '監視器' },
-      ]
-    }
-  ];
-
   constructor(
     private popuService: PopulationStructureService,
     private yearService: YearStructureService,
@@ -182,19 +145,14 @@ export class MapModalComponent implements OnInit {
   public async LoadAllLayer() {
 
     await this.layerService.getGeoJsonLayer('county')
-      .subscribe(result => this.geoLayerCounty = result);
+      .subscribe(result => this.layerData[0].geojson = result);
 
-    await this.layerService.getPointerLayer('新竹市公有停車場相關資訊.csv')
-      .subscribe(result => this.geoLayerPark = result);
-
-    await this.layerService.getPointerLayer('監視器.csv')
-      .subscribe(result => this.geoLayerMonitor = result);
-
-    await this.layerService.getPointerLayer('新竹市動物醫院.csv')
-      .subscribe(result => this.geoLayerAniHospi = result);
-
-    await this.layerService.getPointerLayer('新竹市幼兒園名錄.csv')
-      .subscribe(result => this.geoLayerKinderGarten = result);
+    this.layerData.forEach(async (obj) => {
+      if (obj.id != 11) {
+        await this.layerService.getPointerLayer(obj.file, obj.class)
+          .subscribe(result => obj.geojson = result);
+      }
+    });
 
   }
 
@@ -203,14 +161,12 @@ export class MapModalComponent implements OnInit {
    * @param e 
    */
   public geoLayerClick(e) {
-
     let feature = e.feature.f;
-    this.infowinLat = feature.lat + 0.00008;
-    this.infowinLng = feature.lng;
+    this.infowinLat = Number(feature.lat) + 0.00008;
+    this.infowinLng = Number(feature.lng);
     this.infowinMsg[0] = feature.name;
     this.infowinMsg[1] = feature.addr;
     this.infowinMsg[2] = feature.tel;
-
     this.infowinIsOpen = true;
   }
 
@@ -221,19 +177,21 @@ export class MapModalComponent implements OnInit {
 
     this.countPark = 0;
 
-    this.geoLayerPark['features'].forEach(async (element) => {
-      let lat = Number(element.geometry.coordinates[1]);
-      let lng = Number(element.geometry.coordinates[0]);
-      let p2 = [lat, lng];
-      await this.gmapService.getDistance([this.lat, this.lng], p2)
-        .subscribe(
-        result => {
-          this.zone.run(() => {
-            if (result <= this.radius) {
-              this.countPark++;
-            }
+    this.layerData.forEach(obj => {
+      obj.geojson['features'].forEach(async (element) => {
+        let lat = Number(element.geometry.coordinates[1]);
+        let lng = Number(element.geometry.coordinates[0]);
+        let p2 = [lat, lng];
+        await this.gmapService.getDistance([this.lat, this.lng], p2)
+          .subscribe(
+          result => {
+            this.zone.run(() => {
+              if (result <= this.radius) {
+                this.countPark++;
+              }
+            });
           });
-        });
+      });
     });
 
 
@@ -279,7 +237,7 @@ export class MapModalComponent implements OnInit {
    * @param lat 
    * @param lng 
    */
-  public saveMarker(lat: number, lng: number) {
+  public saveMarker(lat: Number, lng: Number) {
     this.marker.lat = lat;
     this.marker.lng = lng;
   }
@@ -327,8 +285,12 @@ export class MapModalComponent implements OnInit {
         icon = 'assets/images/hospi.png';
         break;
       case 'kindergarten':
-        icon = 'assets/images/a.png';
+        icon = 'assets/images/school.png';
         break;
+      case 'warningplace':
+        icon = 'assets/images/burglary.png';
+      case 'parenting':
+        icon = 'assets/images/temple.png';
     }
 
     return {
@@ -341,6 +303,33 @@ export class MapModalComponent implements OnInit {
       strokeOpacity: 0.8,
     };
   }
+
+
+  /**
+ * 圖層控制
+ * @param node 
+ * @param event 
+ */
+  public check(node, $event) {
+
+    if (!node.data.checked) $('.gmap-loading').show();
+
+    this.updateChildNodesCheckBox(node, $event.target.checked);
+    this.updateParentNodesCheckBox(node.parent);
+
+    // 圖層勾選清單
+    this.layerData.forEach(obj => {
+      if (obj.id == node.id) {
+        obj.show = node.data.checked;
+      } else if (obj.parent_id == node.id) {
+        obj.show = node.data.checked;
+      }
+    });
+
+  }
+
+
+
 
   /**
    * 下拉式選單 - 年齡結構
@@ -429,61 +418,6 @@ export class MapModalComponent implements OnInit {
   //   }
   // }
 
-  /**
-   * 圖層控制
-   * @param node 
-   * @param event 
-   */
-  public check(node, $event) {
-
-    if (!node.data.checked) $('.gmap-loading').show();
-
-    this.updateChildNodesCheckBox(node, $event.target.checked);
-    this.updateParentNodesCheckBox(node.parent);
-
-    switch (node.id) {
-      case 1:
-        if (node.data.checked) {
-          this.geoLayerShowCounty = true;
-        } else {
-          this.geoLayerShowCounty = false;
-        }
-        break;
-      case 11:
-        this.geoLayerShowCounty = !this.geoLayerShowCounty;
-        break;
-      case 2:
-        if (node.data.checked) {
-          this.geoLayerShowPark = true;
-          this.geoLayerShowAniHospi = true;
-          this.geoLayerShowKinderGarten = true;
-        } else {
-          this.geoLayerShowPark = false;
-          this.geoLayerShowAniHospi = false;
-          this.geoLayerShowKinderGarten = false;
-        }
-        break;
-      case 21:
-        this.geoLayerShowPark = !this.geoLayerShowPark;
-        break;
-      case 22:
-        this.geoLayerShowAniHospi = !this.geoLayerShowAniHospi;
-        break;
-      case 23:
-        this.geoLayerShowKinderGarten = !this.geoLayerShowKinderGarten;
-        break;
-      case 3:
-        if (node.data.checked) {
-          this.geoLayerShowMonitor = true;
-        } else {
-          this.geoLayerShowMonitor = false;
-        }
-        break;
-      case 31:
-        this.geoLayerShowMonitor = !this.geoLayerShowMonitor;
-        break;
-    }
-  }
 
   /**
    * check 連動
