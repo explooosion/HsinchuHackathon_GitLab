@@ -1,7 +1,8 @@
 ﻿/**
- * 新竹市監視器相關資訊
+ * 桃竹苗區健保特約兒童復健療育單位
  */
 export class ChildrenRehabilitation {
+    public group: String = 'childrenRehabilitation';
     public name: String;
     public addr: String;
     public tel: String;

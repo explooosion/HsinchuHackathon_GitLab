@@ -35,8 +35,8 @@ export class MapModalComponent implements OnInit {
   // 初始資料
   lat: Number = 24.799448;
   lng: Number = 120.979021;
-  zoom: Number = 16;
-  radius: Number = 500; // 半徑(公尺)
+  zoom: Number = 15;
+  radius: Number = 1000; // 半徑(公尺)
   color: string = '#aa93d6';
   addr: string = "新竹市體育館";
 
@@ -148,11 +148,23 @@ export class MapModalComponent implements OnInit {
       .subscribe(result => this.layerData[0].geojson = result);
 
     this.layerData.forEach(async (obj) => {
-      if (obj.id != 11) {
-        await this.layerService.getPointerLayer(obj.file, obj.class)
-          .subscribe(result => obj.geojson = result);
+
+      // 點圖
+      if (obj.parent_id < 4) {
+        if (obj.id != 101) {
+          await this.layerService.getPointerLayer(obj.file, obj.class)
+            .subscribe(result => obj.geojson = result);
+        }
+      } else if (obj.parent_id == 4) {
+        // 線圖
+        await this.layerService.getLineLayer(obj.file, obj.class)
+          .subscribe(result => {
+            obj.geojson = result;
+          });
       }
     });
+
+    console.log(this.layerData);
 
   }
 
@@ -164,9 +176,19 @@ export class MapModalComponent implements OnInit {
     let feature = e.feature.f;
     this.infowinLat = Number(feature.lat) + 0.00008;
     this.infowinLng = Number(feature.lng);
-    this.infowinMsg[0] = feature.name;
-    this.infowinMsg[1] = feature.addr;
-    this.infowinMsg[2] = feature.tel;
+
+    if (feature.name) {
+      this.infowinMsg[0] = feature.name;
+    }
+
+    if (feature.addr) {
+      this.infowinMsg[1] = feature.addr;
+    }
+
+    if (feature.tel) {
+      this.infowinMsg[2] = `Tel: ${feature.tel}`;
+    }
+
     this.infowinIsOpen = true;
   }
 
@@ -275,22 +297,25 @@ export class MapModalComponent implements OnInit {
     }
 
     switch (feature.getProperty('group')) {
-      case 'park':
-        icon = 'assets/images/c.png';
-        break;
-      case 'monitor':
-        icon = 'assets/images/secure.png';
-        break;
-      case 'anihospi':
-        icon = 'assets/images/hospi.png';
-        break;
-      case 'kindergarten':
-        icon = 'assets/images/school.png';
-        break;
-      case 'warningplace':
-        icon = 'assets/images/burglary.png';
-      case 'parenting':
-        icon = 'assets/images/temple.png';
+      case 'park': icon = 'assets/images/c.png'; break;
+      case 'monitor': icon = 'assets/images/secure.png'; break;
+      case 'anihospi': icon = 'assets/images/hospi.png'; break;
+      case 'kindergarten': icon = 'assets/images/b.png'; break;
+      case 'warningplace': icon = 'assets/images/burglary.png'; break;
+      case 'parenting': icon = 'assets/images/temple.png'; break;
+      case 'motocharge': icon = 'assets/images/a.png'; break;
+      case 'obstacle': icon = 'assets/images/c.png'; break;
+      case 'vaccinehospi': icon = 'assets/images/b.png'; break;
+      case 'aedplace': icon = 'assets/images/a.png'; break;
+      case 'oldagency': icon = 'assets/images/hospi.png'; break;
+      case 'gas': icon = 'assets/images/a.png'; break;
+      case 'firedepartment': icon = 'assets/images/c.png'; break;
+      case 'plice': icon = 'assets/images/b.png'; break;
+      case 'childrenRehabilitation': icon = 'assets/images/a.png'; break;
+      case 'speedmonitor': icon = 'assets/images/c.png'; break;
+      case 'youbike': icon = 'assets/images/b.png'; break;
+      case 'freewifi': icon = 'assets/images/a.png'; break;
+      case 'school': icon = 'assets/images/a.png'; break;
     }
 
     return {

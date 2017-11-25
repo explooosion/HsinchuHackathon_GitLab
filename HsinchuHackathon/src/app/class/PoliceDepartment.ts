@@ -1,20 +1,9 @@
 ﻿/**
- * 新竹市監視器相關資訊
+ * 警察局
  */
-export class FireDepartment {
-    public name: String;
-    public postcode: Number;
-    public addr: String;
-    public tel: String;
-    public lat: Number;
-    public lng: Number;
+export class PliceDepartment {
+    public group: String = 'plice';
 
-    constructor(name, postcode, addr, tel, lat, lng) {
-        this.name = name;
-        this.postcode = postcode;
-        this.addr = addr;
-        this.tel = tel;
-        this.lat = lat;
-        this.lng = lng;
-    }
+    constructor() { }
+
 }

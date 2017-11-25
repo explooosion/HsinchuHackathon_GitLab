@@ -1,7 +1,8 @@
 ﻿/**
- * 新竹市監視器相關資訊
+ * 消防局
  */
 export class FireDepartment {
+    public group: String = 'firedepartment';
     public name: String;
     public lat: Number;
     public lng: Number;

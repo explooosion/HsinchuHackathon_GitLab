@@ -7,7 +7,6 @@ import { Component } from '@angular/core';
 })
 export class AppComponent {
 
-  title: string = '生活照護友善指數';
   constructor() { }
 
 }

@@ -50,22 +50,50 @@ export class LayerService {
   }
 
   /**
+   * 讀取線段
+   * @param category 
+   * @param city 
+   */
+  public getLineLayer(filename: String, csx: any) {
+    return this.http.get(this.fileUrl + '/' + filename)
+      .map((res) => { return this.XmlParser(res, csx); });
+  }
+
+
+  /**
    * XMl to Feature
    * @param res Response
    * @param clz lass
    */
   public XmlParser(res: Response, clz: any) {
-    let csvData = res['_body'] || '';
-    let allTextLines = csvData.split(/\r\n|\n/);
-    let headers = allTextLines[0].split(',');
+
+    const filetype = res.url.toString().indexOf('json') > 0 ? 'json' : 'csv';
+
+    let ResData = res['_body'] || '';
     let feature = [];
 
-    for (let i = 1; i < allTextLines.length; i++) {
-      let data = allTextLines[i].split(',');
-      if (data.length == headers.length) {
-        feature.push(new clz(data));
+    if (filetype == 'json') {
+
+      let json = JSON.parse(ResData);
+      for (let i = 1; i < json.length; i++) {
+        const _group = new clz(...json).group;
+        json[i]['group'] = _group;
+        feature.push(json[i]);
+      }
+
+    } else if (filetype == 'csv') {
+
+      let allTextLines = ResData.split(/\r\n|\n/);
+      let headers = allTextLines[0].split(',');
+
+      for (let i = 1; i < allTextLines.length; i++) {
+        let data = allTextLines[i].split(',');
+        if (data.length == headers.length) {
+          feature.push(new clz(data));
+        }
       }
     }
+
     return feature;
   }
 
