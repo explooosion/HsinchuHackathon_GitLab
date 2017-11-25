@@ -15,7 +15,7 @@ import { VaccineHospi } from '../class/vaccinehospi';
 import { AEDPlace } from '../class/aedplace';
 import { OldAgency } from '../class/oldagency';
 import { Gas } from '../class/gas';
-import { FireDepartment } from '../class/FireDepartment';
+import { FireDepartment } from '../class/firedepartment';
 import { PliceDepartment } from '../class/policedepartment';
 import { ChildrenRehabilitation } from '../class/childrenrehabilitation';
 import { SpeedMonitor } from '../class/speedmonitor';
