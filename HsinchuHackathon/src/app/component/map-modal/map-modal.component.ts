@@ -253,7 +253,7 @@ export class MapModalComponent implements OnInit {
 
 
   /**
-   * 環域分析 EVENT
+   * 最佳路徑 EVENT
    */
   public async analyticsPointer() {
 
@@ -289,13 +289,13 @@ export class MapModalComponent implements OnInit {
 
 
     // 分析完後要更新圖表 - 區域社福評估
-    this.radarChartData = [
-      {
-        data: [
-          this.countPark],
-        label: this.addr
-      }
-    ];
+    // this.radarChartData = [
+    //   {
+    //     data: [
+    //       this.countPark],
+    //     label: this.addr
+    //   }
+    // ];
 
   }
 
@@ -370,25 +370,46 @@ export class MapModalComponent implements OnInit {
     }
 
     switch (feature.getProperty('group')) {
-      case 'park': icon = 'assets/images/c.png'; break;
-      case 'monitor': icon = 'assets/images/secure.png'; break;
-      case 'anihospi': icon = 'assets/images/hospi.png'; break;
-      case 'kindergarten': icon = 'assets/images/b.png'; break;
-      case 'warningplace': icon = 'assets/images/burglary.png'; break;
-      case 'parenting': icon = 'assets/images/temple.png'; break;
-      case 'motocharge': icon = 'assets/images/a.png'; break;
-      case 'obstacle': icon = 'assets/images/c.png'; break;
-      case 'vaccinehospi': icon = 'assets/images/b.png'; break;
-      case 'aedplace': icon = 'assets/images/a.png'; break;
-      case 'oldagency': icon = 'assets/images/hospi.png'; break;
-      case 'gas': icon = 'assets/images/a.png'; break;
-      case 'firedepartment': icon = 'assets/images/c.png'; break;
-      case 'plice': icon = 'assets/images/b.png'; break;
-      case 'childrenRehabilitation': icon = 'assets/images/a.png'; break;
-      case 'speedmonitor': icon = 'assets/images/c.png'; break;
-      case 'youbike': icon = 'assets/images/b.png'; break;
-      case 'freewifi': icon = 'assets/images/a.png'; break;
-      case 'school': icon = 'assets/images/a.png'; break;
+      case 'park':
+        icon = 'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|F2545B'; break;
+      case 'monitor':
+        icon = 'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|A93F55'; break;
+      case 'anihospi':
+        icon = 'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|8C5E58'; break;
+      case 'kindergarten':
+        icon = 'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|F7DBA7'; break;
+      case 'warningplace':
+        icon = 'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|EEC643'; break;
+      case 'parenting':
+        icon = 'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|01BAEF'; break;
+      case 'motocharge':
+        icon = 'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|001427'; break;
+      case 'obstacle':
+        icon = 'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|FFD700'; break;
+      case 'vaccinehospi':
+        icon = 'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|BF211E'; break;
+      case 'aedplace':
+        icon = 'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|0978E8'; break;
+      case 'oldagency':
+        icon = 'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|43C17E'; break;
+      case 'gas':
+        icon = 'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|B28A74'; break;
+      case 'firedepartment':
+        icon = 'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|9D59BA'; break;
+      case 'plice':
+        icon = 'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|E56300'; break;
+      case 'childrenRehabilitation':
+        icon = 'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|7AC1BD'; break;
+      case 'speedmonitor':
+        icon = 'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|4F3620'; break;
+      case 'youbike':
+        icon = 'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|EF476F'; break;
+      case 'freewifi':
+        icon = 'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|06D6A0'; break;
+      case 'school':
+        icon = 'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|FFFB46'; break;
+      case 'a1':
+        icon = 'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|26547C'; break;
     }
 
     return {
@@ -429,28 +450,28 @@ export class MapModalComponent implements OnInit {
 
 
 
-  /**
-   * 下拉式選單 - 年齡結構
-   * @param city 
-   */
+  // /**
+  //  * 下拉式選單 - 年齡結構
+  //  * @param city 
+  //  */
 
-  public optionYearChange(city: any) {
-    this.yearDataPercent = this.yearService.getStructurePercent(city, this.yearValueSlider);
-    this.yearActiveSlider = ''; // 選擇縣市後才可以滑動 Slider
+  // public optionYearChange(city: any) {
+  //   this.yearDataPercent = this.yearService.getStructurePercent(city, this.yearValueSlider);
+  //   this.yearActiveSlider = ''; // 選擇縣市後才可以滑動 Slider
 
-    // 扶養比
-    this.yearCountPercent = Number(Number((Number(this.yearDataPercent[0]) + Number(this.yearDataPercent[2])) / this.yearDataPercent[1] * 100).toFixed(2));
-    var old = Number(this.yearCountPercent / 10);
-    this.yearCountOldMan = [];
-    for (let i = 1; i <= old; i++) {
-      this.yearCountOldMan.push(i);
-    }
-    var man = 10;
-    this.yearCountMale = [];
-    for (let j = 1; j <= man; j++) {
-      this.yearCountMale.push(j);
-    }
-  }
+  //   // 扶養比
+  //   this.yearCountPercent = Number(Number((Number(this.yearDataPercent[0]) + Number(this.yearDataPercent[2])) / this.yearDataPercent[1] * 100).toFixed(2));
+  //   var old = Number(this.yearCountPercent / 10);
+  //   this.yearCountOldMan = [];
+  //   for (let i = 1; i <= old; i++) {
+  //     this.yearCountOldMan.push(i);
+  //   }
+  //   var man = 10;
+  //   this.yearCountMale = [];
+  //   for (let j = 1; j <= man; j++) {
+  //     this.yearCountMale.push(j);
+  //   }
+  // }
 
   // /**
   //  * 卷軸 - 年齡結構

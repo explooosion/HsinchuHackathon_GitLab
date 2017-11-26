@@ -43,6 +43,7 @@ export const LayerControl = [
             { id: 302, name: '婦幼安全警示地點' },
             { id: 303, name: '消防局' },
             { id: 304, name: '警察局' },
+            { id: 305, name: 'A1交通事故' },
         ]
     },
     // {

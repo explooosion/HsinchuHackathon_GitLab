@@ -22,6 +22,7 @@ import { SpeedMonitor } from '../class/speedmonitor';
 import { YouBike } from '../class/youbike';
 import { FreeWifi } from '../class/freeWifi';
 import { School } from '../class/school';
+import { A1 } from '../class/a1';
 
 export const LayerData = [
     {
@@ -242,6 +243,17 @@ export const LayerData = [
         geojson: null,
         file: '警察局.json',
         icon: 'burglary.png'
+    },
+    {
+        parent_id: 3,
+        id: 305,
+        name: 'A1',
+        class: A1,
+        description: 'A1交通事故',
+        show: false,
+        geojson: null,
+        file: 'A1.json',
+        icon: 'ㄇ.png'
     },
     // {
     //     parent_id: 4,
