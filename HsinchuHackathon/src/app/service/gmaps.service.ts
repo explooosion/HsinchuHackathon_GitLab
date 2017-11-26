@@ -55,7 +55,41 @@ export class GMapsService extends GoogleMapsAPIWrapper {
         observer.complete();
       }
     })
-
-
   }
+
+
+  /**
+   * 繪製旅途建議路線
+   * @param point1 起點
+   * @param point2 終點
+   */
+  public getDirections(point1: any, point2: any) {
+
+    let p1 = new google.maps.LatLng(point1[0], point1[1]);
+    let p2 = new google.maps.LatLng(point2[0], point2[1]);
+
+    return Observable.create(observer => {
+      new google.maps.DirectionsService().route({
+        origin: p1,
+        destination: p2,
+        travelMode: google.maps.TravelMode['DRIVING']
+      }, function (response, status) {
+        if (status == 'OK') {
+          if (typeof (response) != null) {
+            new google.maps.DirectionsRenderer().setDirections(response);
+            observer.next(response);
+            observer.complete();
+          } else {
+            observer.next({});
+            observer.complete();
+          }
+        }
+      });
+
+
+    });
+  }
+
+
+
 }

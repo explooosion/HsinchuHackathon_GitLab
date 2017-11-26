@@ -33,22 +33,24 @@ export const LayerControl = [
             { id: 214, name: 'FreeWifi' },
             { id: 215, name: '市立國中高中' },
         ]
-    }, {
+    },
+    {
         id: 3,
         name: '安全',
         isExpanded: true,
         children: [
-            { id: 301, name: '監視器' },
+            // { id: 301, name: '監視器' },
             { id: 302, name: '婦幼安全警示地點' },
             { id: 303, name: '消防局' },
             { id: 304, name: '警察局' },
         ]
-    }, {
-        id: 4,
-        name: '路線',
-        isExpanded: true,
-        children: [
-            { id: 401, name: '砂石車不須通行路線' },
-        ]
-    }
+    },
+    // {
+    //     id: 4,
+    //     name: '路線',
+    //     isExpanded: true,
+    //     children: [
+    //         { id: 401, name: '砂石車不須通行路線' },
+    //     ]
+    // }
 ];

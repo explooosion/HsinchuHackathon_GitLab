@@ -121,15 +121,27 @@
     <div class="row">
       <div class="col-md-12">
         <div class="row form-group">
-          <label for="example-text-input" class="col-form-label co-custom">地址：</label>
+          <label for="example-text-input" class="col-form-label co-custom">起點：</label>
           <div class="col-md-6">
             <input type="text" class="form-control" [(ngModel)]="addr" placeholder="placeholderText" />
           </div>
           <div class="col-md-1">
-            <button type="button" class="btn btn-success btn-search co-custom form-control" (click)="setCircle()">定位</button>
+            <button type="button" class="btn btn-success btn-search co-custom form-control" (click)="setCircle(null,null)">定位</button>
           </div>
-          <div class="col-md-1">
-            <button type="button" class="btn btn-success btn-search co-custom form-control" (click)="analyticsPointer()">分析</button>
+        </div>
+
+        <div class="row form-group">
+          <label for="example-text-input" class="col-form-label co-custom">終點：</label>
+          <div class="col-md-6">
+            <input type="text" class="form-control" [(ngModel)]="addr2" placeholder="placeholderText" />
+          </div>
+          <!-- <div class="col-md-2 form-group">
+            <select class="form-control custom-select" name="selGroup" [(ngModel)]="travelModeSelect">
+              <option *ngFor="let t of travelode" [ngValue]="t.mode">{{ t.name }}</option>
+            </select>
+          </div> -->
+          <div class="col-md-2">
+            <button type="button" class="btn btn-success btn-search co-custom form-control" (click)="analyticsDirections()">路徑建議</button>
           </div>
         </div>
 
@@ -172,14 +184,14 @@
           </div>
         </div>
       </div>
-
       <div class="col-9">
         <div class="gmap">
-          <div class="result-box">
+          <!-- <div class="result-box">
             <p>監視器材：{{countSecure}}</p>
-          </div>
-          <agm-map class="gmap-box" [latitude]="lat" [longitude]="lng" [zoom]="zoom" [disableDefaultUI]="false" [fitBounds]="bounds">
-            <agm-marker [latitude]=" lat" [longitude]="lng"></agm-marker>
+          </div> -->
+          <agm-map #map class="gmap-box" [latitude]="lat" [longitude]="lng" [zoom]="zoom" [disableDefaultUI]="false" [fitBounds]="bounds">
+            <agm-directions *ngIf="direction" [origin]="direction.origin" [destination]="direction.destination" [waypoints]="waypoints"></agm-directions>
+            <agm-marker [latitude]="lat" [longitude]="lng"></agm-marker>
             <agm-circle [latitude]="lat" [longitude]="lng" [radius]="radius" [fillColor]="color" [fillOpacity]="0.6"></agm-circle>
             <!-- 圖層資料 -->
             <div *ngFor="let g of layerData">

@@ -199,17 +199,17 @@ export const LayerData = [
         file: '國高中學校.json',
         icon: 'c.png'
     },
-    {
-        parent_id: 3,
-        id: 301,
-        name: 'Monitor',
-        class: Monitor,
-        description: '監視器',
-        show: false,
-        geojson: null,
-        file: '監視器.csv',
-        icon: 'secure.png'
-    },
+    // {
+    //     parent_id: 3,
+    //     id: 301,
+    //     name: 'Monitor',
+    //     class: Monitor,
+    //     description: '監視器',
+    //     show: false,
+    //     geojson: null,
+    //     file: '監視器.csv',
+    //     icon: 'secure.png'
+    // },
     {
         parent_id: 3,
         id: 302,
@@ -243,16 +243,16 @@ export const LayerData = [
         file: '警察局.json',
         icon: 'burglary.png'
     },
-    {
-        parent_id: 4,
-        id: 401,
-        name: 'Truck',
-        class: Truck,
-        description: '砂石車不須經過申請即可通行之路線',
-        show: false,
-        geojson: null,
-        file: '砂石車不須經過申請即可通行之路線.json',
-        icon: 'a.png'
-    }
+    // {
+    //     parent_id: 4,
+    //     id: 401,
+    //     name: 'Truck',
+    //     class: Truck,
+    //     description: '砂石車不須經過申請即可通行之路線',
+    //     show: false,
+    //     geojson: null,
+    //     file: '砂石車不須經過申請即可通行之路線.json',
+    //     icon: 'a.png'
+    // }
 ];
 

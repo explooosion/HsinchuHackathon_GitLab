@@ -6,12 +6,13 @@ import { LayerService } from '../../service/layer.service';
 import { YearStructureService } from '../../service/year-structure.service';
 import { PopulationStructureService } from '../../service/population-structure.service';
 
+import { TravelMode } from '../../class/travelmode';
+import { Direction } from '../../class/direction';
 import { Marker } from '../../class/marker';
 import { MapsAPILoader } from '@agm/core';
 
 import { LayerControl } from '../../map/layer-control';
 import { LayerData } from '../../map/layer-data';
-
 import { async } from '@angular/core/testing';
 
 declare let jquery: any;
@@ -35,10 +36,17 @@ export class MapModalComponent implements OnInit {
   // 初始資料
   lat: Number = 24.799448;
   lng: Number = 120.979021;
+  // 路徑規劃(起點終點)
+  public direction: Direction = null;
+  // 必經點位
+  public waypoints: any;
+  // public travelModeSelect = 'BICYCLING';
+  // public travelode = TravelMode;
   zoom: Number = 15;
-  radius: Number = 1000; // 半徑(公尺)
+  radius: Number = 2000; // 半徑(公尺)
   color: string = '#aa93d6';
-  addr: string = "新竹市體育館";
+  addr: string = "新竹市新都旅社";
+  addr2: string = "新竹市鳳仙清粥小菜";
 
   // 分析統計
   countPark: number = 17;
@@ -164,8 +172,6 @@ export class MapModalComponent implements OnInit {
       }
     });
 
-    console.log(this.layerData);
-
   }
 
   /**
@@ -192,28 +198,93 @@ export class MapModalComponent implements OnInit {
     this.infowinIsOpen = true;
   }
 
+
+  /**
+   * 婦幼安全路線分析
+   */
+  public async analyticsDirections() {
+    let origin = new Marker();
+    let destination = new Marker();
+
+    // reset data
+    // this.direction = null;
+    this.waypoints = [];
+
+    await this.gmapService.getLatLan(this.addr)
+      .subscribe(
+      async (result1) => {
+        await this.gmapService.getLatLan(this.addr2)
+          .subscribe(
+          async (result) => {
+            origin.lat = result1.lat();
+            origin.lng = result1.lng();
+            destination.lat = result.lat();
+            destination.lng = result.lng();
+
+            // center point
+            let clat = (result1.lat() + result.lat()) / 2;
+            let clng = (result1.lng() + result.lng()) / 2;
+            this.lat = clat;
+            this.lng = clng;
+            await this.setCircle(clat, clng);
+
+            await this.gmapService.getDistance([origin.lat, origin.lng], [clat, clng])
+              .subscribe(result => {
+                this.radius = result;
+              });
+
+            // 確認有無危險地點
+            await this.analyticsPointer();
+
+            // console.log(this.waypoints);
+            if (!this.direction) {
+              this.direction = new Direction(origin, destination);
+            } else {
+              // this.direction.destination = destination;
+              // this.direction.origin = origin;
+              this.direction = new Direction(origin, destination);
+            }
+
+          });
+      });
+
+  }
+
+
+
   /**
    * 環域分析 EVENT
    */
-  public analyticsPointer() {
+  public async analyticsPointer() {
 
     this.countPark = 0;
 
     this.layerData.forEach(obj => {
-      obj.geojson['features'].forEach(async (element) => {
-        let lat = Number(element.geometry.coordinates[1]);
-        let lng = Number(element.geometry.coordinates[0]);
-        let p2 = [lat, lng];
-        await this.gmapService.getDistance([this.lat, this.lng], p2)
-          .subscribe(
-          result => {
-            this.zone.run(() => {
-              if (result <= this.radius) {
-                this.countPark++;
-              }
+
+      if (obj.description == '婦幼安全警示地點') {
+
+        obj.geojson['features'].forEach(async (element) => {
+          let lat = Number(element.geometry.coordinates[1]);
+          let lng = Number(element.geometry.coordinates[0]);
+          let p2 = [lat, lng];
+          await this.gmapService.getDistance([this.lat, this.lng], p2)
+            .subscribe(
+            result => {
+              this.zone.run(() => {
+                // 如果在半徑內  
+                if (result <= this.radius) {
+                  this.waypoints =
+                    [{
+                      location: { lat: Number(element.properties.lat2), lng: Number(element.properties.lng2) },
+                      stopover: true // 標記AB上去,否則會出現白點
+                    }];
+                }
+              });
             });
-          });
-      });
+        });
+
+      }
+
     });
 
 
@@ -231,23 +302,25 @@ export class MapModalComponent implements OnInit {
   /**
    * 繪製圓形區域 EVENT
    */
-  public async setCircle() {
+  public async setCircle(lat, lng) {
 
     await this.gmapService.getLatLan(this.addr)
       .subscribe(
-      result => {
+      async (result) => {
         //必須使用zone 觀察整個 view 否則會導致延遲
-        this.zone.run(() => {
-          this.lat = result.lat();
-          this.lng = result.lng();
-          this.saveMarker(result.lat(), result.lng());
+        await this.zone.run(() => {
           this.mapsAPILoader.load().then(() => {
+
+            this.lat = lat || result.lat();
+            this.lng = lng || result.lng();
+
+            this.saveMarker(result.lat(), result.lng());
             this.bounds = new window['google'].maps.LatLngBounds(new window['google'].maps.LatLng(this.lat, this.lng));
           }
           )
 
         });
-        this.zoom = 10;
+        this.zoom = 15;
       },
       error => console.log(error),
       () => console.log('Geocoding completed!')
