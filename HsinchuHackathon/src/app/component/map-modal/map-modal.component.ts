@@ -42,6 +42,9 @@ export class MapModalComponent implements OnInit {
   public waypoints: any;
   // public travelModeSelect = 'BICYCLING';
   // public travelode = TravelMode;
+
+  public pointer_life_arr = []; //樣本數
+
   public pointer_life = {
     live: 0,
     traffic: 0,
@@ -59,6 +62,10 @@ export class MapModalComponent implements OnInit {
   color: string = '#aa93d6';
   addr: string = "新竹市新都旅社";
   addr2: string = "新竹市鳳仙清粥小菜";
+
+  // bug
+  // addr: string = "德記青草茶老店本舖";
+  // addr2: string = "新竹中央市場";
 
   // 分析統計
   countPark: number = 17;
@@ -272,6 +279,9 @@ export class MapModalComponent implements OnInit {
 
     this.layerData.forEach(obj => {
 
+      let minDis = 0;
+      let minPoint;
+
       if (obj.description == '婦幼安全警示地點') {
 
         obj.geojson['features'].forEach(async (element) => {
@@ -282,13 +292,23 @@ export class MapModalComponent implements OnInit {
             .subscribe(
             result => {
               this.zone.run(() => {
+
                 // 如果在半徑內  
                 if (result <= this.radius) {
-                  this.waypoints =
-                    [{
+
+                  if (minDis == 0) {
+                    minDis = result;
+                    minPoint = p2;
+                  } else if (result < minDis) {
+                    minDis = result;
+                    minPoint = p2;
+                  }
+
+                  this.waypoints.push(
+                    {
                       location: { lat: Number(element.properties.lat2), lng: Number(element.properties.lng2) },
                       stopover: true // 標記AB上去,否則會出現白點
-                    }];
+                    });
                 }
               });
             });
@@ -307,63 +327,96 @@ export class MapModalComponent implements OnInit {
    */
   public async analyticsArea() {
 
-    // Reset Pointer
-    this.pointer_life = {
-      live: 0,
-      traffic: 0,
-      edu: 0,
-      hospital: 0
-    }
+    // loop 跑樣本數
+    // min = 所有集合對於該指數最小的
+    // 
+    // 樣本數
+    for (let j = 0; j < 2; j++) {
 
-    this.pointer_women_child = {
-      crime: 0,
-      traffic: 0,
-      police: 0
-    }
+      // 產生樣本點
+      //const newPoint = this.gmapService.generatePoint(this.layerData[0].geojson.features[11].geometry.coordinates[0]);
 
-    await this.setCircle(null, null);
 
-    this.layerData.forEach(obj => {
-
-      // parent_id = 1 新竹邊界圖
-
-      if (obj.parent_id > 1) {
-
-        obj.geojson['features'].forEach(async (element) => {
-          let lat = Number(element.geometry.coordinates[1]);
-          let lng = Number(element.geometry.coordinates[0]);
-          let p2 = [lat, lng];
-          await this.gmapService.getDistance([this.lat, this.lng], p2)
-            .subscribe(
-            result => {
-              this.zone.run(() => {
-                // 如果在半徑內  
-                if (result <= this.radius) {
-                  console.log(obj.group);
-
-                  // 類別( 生活便利 & 婦幼安全 )
-                  if (obj.parent_id == 2) {
-                    switch (obj.group) {
-                      case 'live': this.pointer_life.live++; break;
-                      case 'traffic': this.pointer_life.traffic++; break;
-                      case 'edu': this.pointer_life.edu++; break;
-                      case 'hospital': this.pointer_life.hospital++; break;
-                    }
-                  } else {
-                    switch (obj.group) {
-                      case 'crime': this.pointer_women_child.crime++; break;
-                      case 'traffic': this.pointer_women_child.traffic++; break;
-                      case 'police': this.pointer_women_child.police++; break;
-                    }
-                  }
-                }
-              });
-            });
-        });
-
+      // Reset Pointer
+      this.pointer_life = {
+        live: 0,
+        traffic: 0,
+        edu: 0,
+        hospital: 0
       }
 
-    });
+      this.pointer_women_child = {
+        crime: 0,
+        traffic: 0,
+        police: 0
+      }
+
+      // counter 2
+      let count;
+
+      await this.setCircle(null, null);
+
+      // 跑所有圖層
+
+      let i = 0;
+      this.layerData.forEach((obj) => {
+
+        // parent_id = 1 新竹邊界圖
+        if (obj.parent_id > 1) {
+
+          obj.geojson['features'].forEach(async (element) => {
+            let lat = Number(element.geometry.coordinates[1]);
+            let lng = Number(element.geometry.coordinates[0]);
+            let p2 = [lat, lng];
+            await this.gmapService.getDistance([this.lat, this.lng], p2)
+              .subscribe(
+              result => {
+                this.zone.run(() => {
+                  // 如果在半徑內  
+                  if (result <= this.radius) {
+
+                    // 類別( 生活便利 & 婦幼安全 )
+                    if (obj.parent_id == 2) {
+                      switch (obj.group) {
+                        case 'live': this.pointer_life.live++; break;
+                        case 'traffic': this.pointer_life.traffic++; break;
+                        case 'edu': this.pointer_life.edu++; break;
+                        case 'hospital': this.pointer_life.hospital++; break;
+                      }
+                      count = this.pointer_life;
+                    } else {
+                      switch (obj.group) {
+                        case 'crime': this.pointer_women_child.crime++; break;
+                        case 'traffic': this.pointer_women_child.traffic++; break;
+                        case 'police': this.pointer_women_child.police++; break;
+                      }
+                    }
+
+                    // 只處理 生活便利
+                    // if (index == this.layerData.length - 1) {
+                    //   // this.pointer_life_arr.push(count);
+                    //   // console.log(this.pointer_life_arr);
+                    //   console.log('end');
+                    // }
+
+                    // i++;
+                    // if (i == this.layerData.length - 1) {
+
+                    //   // 當最後一筆的時候
+                    //   count = this.pointer_life;
+                    //   this.pointer_life_arr.push(count);
+                    //   console.log(this.pointer_life_arr);
+                    // }
+
+                  }
+                });
+              });
+          });
+
+        }
+
+      });
+    }
 
   }
 

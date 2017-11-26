@@ -59,6 +59,64 @@ export class GMapsService extends GoogleMapsAPIWrapper {
 
 
   /**
+   * 樣本生成
+   */
+  public generatePoint(polygon) {
+
+    // 新竹市南寮舊漁港
+    // 24.8498061 最高緯度
+    // 120.92900280000003
+
+    // 新竹崎頂隧道文化公園
+    // 24.7295481  最低緯度
+    // 120.87860639999997 最小精度
+
+    // 新竹柯子湖路雅池
+    // 24.7588673
+    // 121.03188699999998 最大精度
+
+    // 歸納範圍
+    // [24.7295481~24.8498061]
+    // [120.87860639999997~121.03188699999998]
+
+    let glat = (Math.random() * (24.8498061 - 24.7295481) + 24.7295481).toFixed(7);
+    let glng = (Math.random() * (121.03188699999998 - 120.87860639999997) + 120.87860639999997).toFixed(14);
+
+    let isIn = false;
+    let limitCrash = 3000;
+    while (isIn == false || limitCrash < 0) {
+      limitCrash--;
+      isIn = this.getContainsLocation({ lat: glat, lng: glng }, polygon);
+    }
+
+    return { lat: glat, lng: glng };
+  }
+
+  /**
+   * 判斷點位是否在指定地域
+   */
+  public getContainsLocation(point, polygon) {
+
+    let poly = [];
+
+    polygon.forEach(p => {
+      poly.push({
+        lat: p[1],
+        lng: p[0]
+      });
+    });
+
+    let res = google.maps.geometry.poly.containsLocation(
+      new google.maps.LatLng(point.lat, point.lng),
+      new google.maps.Polygon({ paths: poly }
+      ));
+
+    console.log(res);
+
+    return res;
+  }
+
+  /**
    * 繪製旅途建議路線
    * @param point1 起點
    * @param point2 終點
