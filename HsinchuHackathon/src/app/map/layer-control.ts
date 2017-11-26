@@ -15,7 +15,7 @@ export const LayerControl = [
     {
         id: 2,
         name: '便利',
-        isExpanded: true,
+        isExpanded: false,
         children: [
             { id: 201, name: '公有停車場' },
             { id: 202, name: '動物醫院' },

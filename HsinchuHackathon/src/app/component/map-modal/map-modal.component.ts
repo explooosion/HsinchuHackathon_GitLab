@@ -42,8 +42,20 @@ export class MapModalComponent implements OnInit {
   public waypoints: any;
   // public travelModeSelect = 'BICYCLING';
   // public travelode = TravelMode;
+  public pointer_life = {
+    live: 0,
+    traffic: 0,
+    edu: 0,
+    hospital: 0
+  }
+
+  public pointer_women_child = {
+    crime: 0,
+    traffic: 0,
+    police: 0
+  }
   zoom: Number = 15;
-  radius: Number = 2000; // 半徑(公尺)
+  radius: Number = 500; // 半徑(公尺)
   color: string = '#aa93d6';
   addr: string = "新竹市新都旅社";
   addr2: string = "新竹市鳳仙清粥小菜";
@@ -234,7 +246,7 @@ export class MapModalComponent implements OnInit {
               });
 
             // 確認有無危險地點
-            await this.analyticsPointer();
+            await this.analyticsDangerous();
 
             // console.log(this.waypoints);
             if (!this.direction) {
@@ -251,11 +263,10 @@ export class MapModalComponent implements OnInit {
   }
 
 
-
   /**
-   * 最佳路徑 EVENT
+   * 危險路徑替代點位
    */
-  public async analyticsPointer() {
+  public async analyticsDangerous() {
 
     this.countPark = 0;
 
@@ -288,16 +299,74 @@ export class MapModalComponent implements OnInit {
     });
 
 
-    // 分析完後要更新圖表 - 區域社福評估
-    // this.radarChartData = [
-    //   {
-    //     data: [
-    //       this.countPark],
-    //     label: this.addr
-    //   }
-    // ];
+  }
+
+
+  /**
+   * 環域分析-指數計算
+   */
+  public async analyticsArea() {
+
+    // Reset Pointer
+    this.pointer_life = {
+      live: 0,
+      traffic: 0,
+      edu: 0,
+      hospital: 0
+    }
+
+    this.pointer_women_child = {
+      crime: 0,
+      traffic: 0,
+      police: 0
+    }
+
+    await this.setCircle(null, null);
+
+    this.layerData.forEach(obj => {
+
+      // parent_id = 1 新竹邊界圖
+
+      if (obj.parent_id > 1) {
+
+        obj.geojson['features'].forEach(async (element) => {
+          let lat = Number(element.geometry.coordinates[1]);
+          let lng = Number(element.geometry.coordinates[0]);
+          let p2 = [lat, lng];
+          await this.gmapService.getDistance([this.lat, this.lng], p2)
+            .subscribe(
+            result => {
+              this.zone.run(() => {
+                // 如果在半徑內  
+                if (result <= this.radius) {
+                  console.log(obj.group);
+
+                  // 類別( 生活便利 & 婦幼安全 )
+                  if (obj.parent_id == 2) {
+                    switch (obj.group) {
+                      case 'live': this.pointer_life.live++; break;
+                      case 'traffic': this.pointer_life.traffic++; break;
+                      case 'edu': this.pointer_life.edu++; break;
+                      case 'hospital': this.pointer_life.hospital++; break;
+                    }
+                  } else {
+                    switch (obj.group) {
+                      case 'crime': this.pointer_women_child.crime++; break;
+                      case 'traffic': this.pointer_women_child.traffic++; break;
+                      case 'police': this.pointer_women_child.police++; break;
+                    }
+                  }
+                }
+              });
+            });
+        });
+
+      }
+
+    });
 
   }
+
 
   /**
    * 繪製圓形區域 EVENT
@@ -343,7 +412,6 @@ export class MapModalComponent implements OnInit {
    */
   public styleLayer(feature) {
 
-    console.log(feature);
     if ($('.gmap-loading').css('display') != 'none') {
       setTimeout(() => {
         $('.gmap-loading').hide();

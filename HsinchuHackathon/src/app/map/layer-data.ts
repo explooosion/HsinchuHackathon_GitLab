@@ -34,7 +34,8 @@ export const LayerData = [
         show: false,
         geojson: null,
         file: 'county',
-        icon: null
+        icon: null,
+        group: 'geo'
     },
     {
         parent_id: 2,
@@ -45,7 +46,8 @@ export const LayerData = [
         show: false,
         geojson: null,
         file: '新竹市公有停車場相關資訊.csv',
-        icon: 'c.png'
+        icon: 'c.png',
+        group: 'traffic'
     },
     {
         parent_id: 2,
@@ -56,7 +58,8 @@ export const LayerData = [
         show: false,
         geojson: null,
         file: '新竹市動物醫院.csv',
-        icon: 'hospi.png'
+        icon: 'hospi.png',
+        group: 'hospital'
     },
     {
         parent_id: 2,
@@ -67,7 +70,8 @@ export const LayerData = [
         show: false,
         geojson: null,
         file: '新竹市幼兒園名錄.csv',
-        icon: 'temple.png'
+        icon: 'temple.png',
+        group: 'edu'
     },
     {
         parent_id: 2,
@@ -78,7 +82,8 @@ export const LayerData = [
         show: false,
         geojson: null,
         file: '新竹市私立托嬰中心名冊.csv',
-        icon: 'school.png'
+        icon: 'school.png',
+        group: 'edu'
     },
     {
         parent_id: 2,
@@ -89,7 +94,8 @@ export const LayerData = [
         show: false,
         geojson: null,
         file: '新竹市電動機車充電站.csv',
-        icon: 'a.png'
+        icon: 'a.png',
+        group: 'traffic'
     },
     {
         parent_id: 2,
@@ -100,7 +106,8 @@ export const LayerData = [
         show: false,
         geojson: null,
         file: '新竹市身心障礙福利機構名冊.csv',
-        icon: 'a.png'
+        icon: 'a.png',
+        group: 'hospital'
     },
     {
         parent_id: 2,
@@ -111,7 +118,8 @@ export const LayerData = [
         show: false,
         geojson: null,
         file: '新竹市預防接種合約院所名冊.csv',
-        icon: 'a.png'
+        icon: 'a.png',
+        group: 'hospital'
     }, {
         parent_id: 2,
         id: 208,
@@ -121,7 +129,8 @@ export const LayerData = [
         show: false,
         geojson: null,
         file: '新竹市AED心臟電擊器設置地點.csv',
-        icon: 'a.png'
+        icon: 'a.png',
+        group: 'hospital'
     },
     {
         parent_id: 2,
@@ -132,7 +141,8 @@ export const LayerData = [
         show: false,
         geojson: null,
         file: '新竹市老人福利機構一覽表.json',
-        icon: 'a.png'
+        icon: 'a.png',
+        group: 'hospital'
     },
     {
         parent_id: 2,
@@ -143,7 +153,8 @@ export const LayerData = [
         show: false,
         geojson: null,
         file: '新竹市加油(氣)站.csv',
-        icon: 'c.png'
+        icon: 'c.png',
+        group: 'traffic'
     },
     {
         parent_id: 2,
@@ -154,7 +165,8 @@ export const LayerData = [
         show: false,
         geojson: null,
         file: '桃竹苗區健保特約兒童復健療育單位.json',
-        icon: 'c.png'
+        icon: 'c.png',
+        group: 'hospital'
     },
     {
         parent_id: 2,
@@ -165,7 +177,8 @@ export const LayerData = [
         show: false,
         geojson: null,
         file: '測速照相.json',
-        icon: 'c.png'
+        icon: 'c.png',
+        group: 'traffic'
     },
     {
         parent_id: 2,
@@ -176,7 +189,8 @@ export const LayerData = [
         show: false,
         geojson: null,
         file: 'YouBike.json',
-        icon: 'c.png'
+        icon: 'c.png',
+        group: 'traffic'
     },
     {
         parent_id: 2,
@@ -187,7 +201,8 @@ export const LayerData = [
         show: false,
         geojson: null,
         file: '免費WIFI.json',
-        icon: 'c.png'
+        icon: 'c.png',
+        group: 'live'
     },
     {
         parent_id: 2,
@@ -198,7 +213,8 @@ export const LayerData = [
         show: false,
         geojson: null,
         file: '國高中學校.json',
-        icon: 'c.png'
+        icon: 'c.png',
+        group: 'edu'
     },
     // {
     //     parent_id: 3,
@@ -220,7 +236,8 @@ export const LayerData = [
         show: false,
         geojson: null,
         file: '婦幼安全警示地點.csv',
-        icon: 'burglary.png'
+        icon: 'burglary.png',
+        group: 'crime'
     },
     {
         parent_id: 3,
@@ -231,7 +248,8 @@ export const LayerData = [
         show: false,
         geojson: null,
         file: '消防局.json',
-        icon: 'burglary.png'
+        icon: 'burglary.png',
+        group: 'police'
     },
     {
         parent_id: 3,
@@ -242,7 +260,8 @@ export const LayerData = [
         show: false,
         geojson: null,
         file: '警察局.json',
-        icon: 'burglary.png'
+        icon: 'burglary.png',
+        group: 'police'
     },
     {
         parent_id: 3,
@@ -253,7 +272,8 @@ export const LayerData = [
         show: false,
         geojson: null,
         file: 'A1.json',
-        icon: 'ㄇ.png'
+        icon: 'a.png',
+        group: 'traffic'
     },
     // {
     //     parent_id: 4,

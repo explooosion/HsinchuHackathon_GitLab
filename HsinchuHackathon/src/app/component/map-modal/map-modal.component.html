@@ -9,7 +9,9 @@
       <div class="card card-inverse card-primary o-hidden h-100">
         <div class="card-block">
           <i class="fa fa-3x fa-home"></i>
-          <h1 class="text-center">32</h1>
+          <h1 class="text-center">
+            {{ pointer_life.live }}
+          </h1>
         </div>
         <div class="card-footer small">
           <h5>居住指數</h5>
@@ -20,7 +22,9 @@
       <div class="card card-inverse card-danger o-hidden h-100">
         <div class="card-block">
           <i class="fa fa-3x fa-bus"></i>
-          <h1 class="text-center">15</h1>
+          <h1 class="text-center">
+            {{ pointer_life.traffic }}
+          </h1>
         </div>
         <div class="card-footer small">
           <h5>交通便利指數</h5>
@@ -31,7 +35,9 @@
       <div class="card card-inverse card-success o-hidden h-100">
         <div class="card-block">
           <i class="fa fa-3x fa-graduation-cap"></i>
-          <h1 class="text-center">17</h1>
+          <h1 class="text-center">
+            {{ pointer_life.edu }}
+          </h1>
         </div>
         <div class="card-footer small">
           <h5>教育指數</h5>
@@ -42,7 +48,9 @@
       <div class="card card-inverse card-warning o-hidden h-100">
         <div class="card-block">
           <i class="fa fa-3x fa-heartbeat"></i>
-          <h1 class="text-center">8</h1>
+          <h1 class="text-center">
+            {{ pointer_life.hospital }}
+          </h1>
         </div>
         <div class="card-footer small">
           <h5>醫療指數</h5>
@@ -66,7 +74,9 @@
       <div class="card card-inverse card-primary o-hidden h-100">
         <div class="card-block">
           <i class="fa fa-3x fa-reddit-alien"></i>
-          <h1 class="text-center">3</h1>
+          <h1 class="text-center">
+            {{ pointer_women_child.crime }}
+          </h1>
         </div>
         <div class="card-footer small">
           <h5>犯罪指數</h5>
@@ -77,7 +87,8 @@
       <div class="card card-inverse card-danger o-hidden h-100">
         <div class="card-block">
           <i class="fa fa-3x fa-warning"></i>
-          <h1 class="text-center">12</h1>
+          <h1 class="text-center">
+            {{ pointer_women_child.traffic }}</h1>
         </div>
         <div class="card-footer small">
           <h5>交通安全指數</h5>
@@ -88,7 +99,8 @@
       <div class="card card-inverse card-success o-hidden h-100">
         <div class="card-block">
           <i class="fa fa-3x fa-shield"></i>
-          <h1 class="text-center">19</h1>
+          <h1 class="text-center">
+            {{ pointer_women_child.police }}</h1>
         </div>
         <div class="card-footer small">
           <h5>警消指數</h5>
@@ -110,7 +122,7 @@
 
     <div class="row">
       <div class="col-lg-12 text-center">
-        <h2 class="title">社會福利環域分析</h2>
+        <h2 class="title">環域與路徑分析</h2>
       </div>
     </div>
   </div>
@@ -127,6 +139,9 @@
           </div>
           <div class="col-md-1">
             <button type="button" class="btn btn-success btn-search co-custom form-control" (click)="setCircle(null,null)">定位</button>
+          </div>
+          <div class="col-md-2">
+            <button type="button" class="btn btn-success btn-search co-custom form-control" (click)="analyticsArea()">環域分析</button>
           </div>
         </div>
 
@@ -165,75 +180,78 @@
         </div>
       </div>
     </div>
-
-
-    <div class="row">
-      <div class="col-3">
-        <div class="card">
-          <div class="card-header card-inverse card-success co-custom">
-            圖層控制
-          </div>
-          <div class="card-block">
-            <blockquote class="card-blockquote">
-              <tree-root #tree [nodes]="nodes" [options]="treeOptions">
-                <template #treeNodeTemplate let-node="node" let-index="index">
-                  <input (change)="check(node, $event)" type="checkbox" [indeterminate]="node.data.indeterminate" [checked]="node.data.checked"> {{ node.data.name }}
-                </template>
-              </tree-root>
-            </blockquote>
-          </div>
-        </div>
-      </div>
-      <div class="col-9">
-        <div class="gmap">
-          <!-- <div class="result-box">
-            <p>監視器材：{{countSecure}}</p>
-          </div> -->
-          <agm-map #map class="gmap-box" [latitude]="lat" [longitude]="lng" [zoom]="zoom" [disableDefaultUI]="false" [fitBounds]="bounds">
-            <agm-directions *ngIf="direction" [origin]="direction.origin" [destination]="direction.destination" [waypoints]="waypoints"></agm-directions>
-            <agm-marker [latitude]="lat" [longitude]="lng"></agm-marker>
-            <agm-circle [latitude]="lat" [longitude]="lng" [radius]="radius" [fillColor]="color" [fillOpacity]="0.6"></agm-circle>
-            <!-- 圖層資料 -->
-            <div *ngFor="let g of layerData">
-              <agm-data-layer *ngIf="g.show && g.parent_id < 4" [geoJson]="g.geojson" (layerClick)="infoWindow.open();geoLayerClick($event)"
-                [style]="styleLayer"></agm-data-layer>
-            </div>
-            <div *ngFor="let lines of layerData">
-              <div *ngIf="lines.parent_id == 4">
-                <agm-polyline *ngFor="let geo of lines.geojson ; let idx = index" [strokeColor]="color">
-                  <div>
-                    <agm-polyline-point *ngFor="let p of geo.path" [latitude]="p.lat" [longitude]="p.lng"></agm-polyline-point>
-                  </div>
-                </agm-polyline>
-              </div>
-            </div>
-            <agm-info-window #infoWindow [isOpen]="infowinIsOpen" [latitude]="infowinLat" [longitude]="infowinLng">
-              <strong>{{infowinMsg[0]}}</strong>
-              <p>{{infowinMsg[1]}}</p>
-              <p>{{infowinMsg[2]}}</p>
-            </agm-info-window>
-          </agm-map>
-          <!-- <div class="gmap-mask">click to unlock</div> -->
-          <div class="sk-fading-circle gmap-loading">
-            <div class="sk-circle1 sk-circle"></div>
-            <div class="sk-circle2 sk-circle"></div>
-            <div class="sk-circle3 sk-circle"></div>
-            <div class="sk-circle4 sk-circle"></div>
-            <div class="sk-circle5 sk-circle"></div>
-            <div class="sk-circle6 sk-circle"></div>
-            <div class="sk-circle7 sk-circle"></div>
-            <div class="sk-circle8 sk-circle"></div>
-            <div class="sk-circle9 sk-circle"></div>
-            <div class="sk-circle10 sk-circle"></div>
-            <div class="sk-circle11 sk-circle"></div>
-            <div class="sk-circle12 sk-circle"></div>
-          </div>
-        </div>
-      </div>
-
-    </div>
   </div>
 
+
+  <div class="container-fluid">
+    <!-- <div class="col-3">
+            <div class="card">
+              <div class="card-header card-inverse card-success co-custom">
+                圖層控制
+              </div>
+              <div class="card-block">
+                <blockquote class="card-blockquote">
+                  <tree-root #tree [nodes]="nodes" [options]="treeOptions">
+                    <template #treeNodeTemplate let-node="node" let-index="index">
+                      <input (change)="check(node, $event)" type="checkbox" [indeterminate]="node.data.indeterminate" [checked]="node.data.checked"> {{ node.data.name }}
+                    </template>
+                  </tree-root>
+                </blockquote>
+              </div>
+            </div>
+          </div> -->
+    <div class="gmap">
+      <div class="gmap-menu">
+        <tree-root #tree [nodes]="nodes" [options]="treeOptions">
+          <template #treeNodeTemplate let-node="node" let-index="index">
+            <input (change)="check(node, $event)" type="checkbox" [indeterminate]="node.data.indeterminate" [checked]="node.data.checked"> {{ node.data.name }}
+          </template>
+        </tree-root>
+      </div>
+      <!-- <div class="result-box">
+                <p>監視器材：{{countSecure}}</p>
+              </div> -->
+      <agm-map #map class="gmap-box" [latitude]="lat" [longitude]="lng" [zoom]="zoom" [disableDefaultUI]="false" [fitBounds]="bounds">
+        <agm-directions *ngIf="direction" [origin]="direction.origin" [destination]="direction.destination" [waypoints]="waypoints"></agm-directions>
+        <agm-marker [latitude]="lat" [longitude]="lng"></agm-marker>
+        <agm-circle [latitude]="lat" [longitude]="lng" [radius]="radius" [fillColor]="color" [fillOpacity]="0.6"></agm-circle>
+        <!-- 圖層資料 -->
+        <div *ngFor="let g of layerData">
+          <agm-data-layer *ngIf="g.show && g.parent_id < 4" [geoJson]="g.geojson" (layerClick)="infoWindow.open();geoLayerClick($event)"
+            [style]="styleLayer"></agm-data-layer>
+        </div>
+        <div *ngFor="let lines of layerData">
+          <div *ngIf="lines.parent_id == 4">
+            <agm-polyline *ngFor="let geo of lines.geojson ; let idx = index" [strokeColor]="color">
+              <div>
+                <agm-polyline-point *ngFor="let p of geo.path" [latitude]="p.lat" [longitude]="p.lng"></agm-polyline-point>
+              </div>
+            </agm-polyline>
+          </div>
+        </div>
+        <agm-info-window #infoWindow [isOpen]="infowinIsOpen" [latitude]="infowinLat" [longitude]="infowinLng">
+          <strong>{{infowinMsg[0]}}</strong>
+          <p>{{infowinMsg[1]}}</p>
+          <p>{{infowinMsg[2]}}</p>
+        </agm-info-window>
+      </agm-map>
+      <!-- <div class="gmap-mask">click to unlock</div> -->
+      <div class="sk-fading-circle gmap-loading">
+        <div class="sk-circle1 sk-circle"></div>
+        <div class="sk-circle2 sk-circle"></div>
+        <div class="sk-circle3 sk-circle"></div>
+        <div class="sk-circle4 sk-circle"></div>
+        <div class="sk-circle5 sk-circle"></div>
+        <div class="sk-circle6 sk-circle"></div>
+        <div class="sk-circle7 sk-circle"></div>
+        <div class="sk-circle8 sk-circle"></div>
+        <div class="sk-circle9 sk-circle"></div>
+        <div class="sk-circle10 sk-circle"></div>
+        <div class="sk-circle11 sk-circle"></div>
+        <div class="sk-circle12 sk-circle"></div>
+      </div>
+    </div>
+  </div>
 
 </div>
 
