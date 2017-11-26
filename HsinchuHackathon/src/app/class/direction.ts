@@ -6,7 +6,7 @@ import { Marker } from './marker';
 export class Direction {
     public origin: Marker;
     public destination: Marker;
-    constructor(origin: Marker, destination: Marker) {
+    constructor(origin, destination) {
         this.origin = origin;
         this.destination = destination;
     }

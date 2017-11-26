@@ -14,6 +14,7 @@ import { MapsAPILoader } from '@agm/core';
 import { LayerControl } from '../../map/layer-control';
 import { LayerData } from '../../map/layer-data';
 import { async } from '@angular/core/testing';
+import { Direct } from 'protractor/built/driverProviders';
 
 declare let jquery: any;
 declare let $: any;
@@ -255,13 +256,12 @@ export class MapModalComponent implements OnInit {
             // 確認有無危險地點
             await this.analyticsDangerous();
 
-            // console.log(this.waypoints);
             if (!this.direction) {
               this.direction = new Direction(origin, destination);
             } else {
-              // this.direction.destination = destination;
-              // this.direction.origin = origin;
-              this.direction = new Direction(origin, destination);
+              this.direction.origin = origin;
+              this.direction.destination = destination;
+              console.log(this.direction);
             }
 
           });
@@ -275,6 +275,7 @@ export class MapModalComponent implements OnInit {
    */
   public async analyticsDangerous() {
 
+    this.waypoints = [];
     this.countPark = 0;
 
     this.layerData.forEach(obj => {
@@ -475,7 +476,7 @@ export class MapModalComponent implements OnInit {
     // console.log(feature);
 
     if (feature.getProperty('COUNTYENG') != '') {
-      console.log('load 縣市');
+      // console.log('load 縣市');
       if (
         feature.getProperty('COUNTYENG') == 'Hsinchu City'
       ) {

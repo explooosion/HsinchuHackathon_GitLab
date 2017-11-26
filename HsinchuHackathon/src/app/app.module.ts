@@ -20,7 +20,7 @@ import { ChartsModule } from 'ng2-charts';
 import { NouisliderModule } from 'ng2-nouislider';
 import { TreeModule } from 'angular-tree-component';
 import { ColorPickerModule } from 'ngx-color-picker';
-import { AgmDirectionsDirective } from './directions/agm-directions.directive';
+import { AgmDirection } from './directions/agm-directions.directive';
 
 @NgModule({
   declarations: [
@@ -29,7 +29,7 @@ import { AgmDirectionsDirective } from './directions/agm-directions.directive';
     MapModalComponent,
     NavbarModalComponent,
     FooterModalComponent,
-    AgmDirectionsDirective
+    AgmDirection
   ],
   imports: [
     BrowserModule,

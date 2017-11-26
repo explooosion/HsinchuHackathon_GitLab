@@ -215,7 +215,7 @@
                 <p>監視器材：{{countSecure}}</p>
               </div> -->
       <agm-map #map class="gmap-box" [latitude]="lat" [longitude]="lng" [zoom]="zoom" [disableDefaultUI]="false" [fitBounds]="bounds">
-        <agm-directions *ngIf="direction" [origin]="direction.origin" [destination]="direction.destination" [waypoints]="waypoints"></agm-directions>
+        <agm-direction *ngIf="direction" [origin]="direction.origin" [destination]="direction.destination" [waypoints]="waypoints"></agm-direction>
         <agm-marker [latitude]="lat" [longitude]="lng"></agm-marker>
         <agm-circle [latitude]="lat" [longitude]="lng" [radius]="radius" [fillColor]="color" [fillOpacity]="0.6"></agm-circle>
         <!-- 圖層資料 -->
